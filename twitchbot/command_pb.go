@@ -17,7 +17,7 @@ func HandlePBCommand(user twitch.User, strings []string) string {
 
 	nub, pro, err := globalapi.GetPersonalRecord(gameState.Map.Name, gameState.Player.TimerMode(), gameState.Player.SteamId)
 
-	message := fmt.Sprintf("%s on %s [%s]: ", gameState.Player.Name, gameState.Map.Name, gameState.Player.Clan)
+	message := fmt.Sprintf("PB of %s on %s [%s]: ", gameState.Player.Name, gameState.Map.Name, gameState.Player.Clan)
 	if nub != nil && err == nil {
 		message += fmt.Sprintf("NUB: %s (%d TP)", nub.FormattedTime(), nub.Teleports)
 	} else {
