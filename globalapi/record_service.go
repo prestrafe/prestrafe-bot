@@ -42,7 +42,6 @@ func GetWorldRecord(mapName, mode string) (nub, pro *Record, err error) {
 	nubs, err := GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
-		"has_teleports":     "true",
 		"tickrate":          "128",
 		"stage":             "0",
 		"overall":           "true",
@@ -73,7 +72,6 @@ func GetPersonalRecord(mapName string, mode string, steamId64 int64) (nub, pro *
 		"map_name":          mapName,
 		"modes_list_string": mode,
 		"steam_id":          convertSteamId(steamId64),
-		"has_teleports":     "true",
 		"tickrate":          "128",
 		"stage":             "0",
 		"overall":           "true",
