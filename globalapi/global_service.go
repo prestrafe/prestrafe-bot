@@ -28,3 +28,15 @@ func globalApiGet(path string, result interface{}, queryParams QueryParameters) 
 
 	return nil
 }
+
+func convertSteamId(steamId64 int64) string {
+	universe := (steamId64 >> 56) & 0xFF
+	if universe == 1 {
+		universe = 0
+	}
+
+	accountIdLowBit := steamId64 & 1
+	accountIdHighBits := (steamId64 >> 1) & 0x7FFFFFF
+
+	return fmt.Sprintf("STEAM_%d:%d:%d", universe, accountIdLowBit, accountIdHighBits)
+}

@@ -15,10 +15,10 @@ func HandlePBCommand(user twitch.User, strings []string) string {
 		return "Could not retrieve current game state"
 	}
 
-	nub, pro, err := globalapi.GetPersonalBests(gameState.Map.Name, gameState.Player.TimerMode(), gameState.Player.SteamId)
+	nub, pro, err := globalapi.GetPersonalRecord(gameState.Map.Name, gameState.Player.TimerMode(), gameState.Player.SteamId)
 
 	message := fmt.Sprintf("%s on %s [%s]: ", gameState.Player.Name, gameState.Map.Name, gameState.Player.Clan)
-	if nub != nil {
+	if nub != nil && err == nil {
 		message += fmt.Sprintf("NUB: %s (%d TP)", nub.FormattedTime(), nub.Teleports)
 	} else {
 		message += fmt.Sprintf("NUB: None")
@@ -26,7 +26,7 @@ func HandlePBCommand(user twitch.User, strings []string) string {
 
 	message += ", "
 
-	if pro != nil {
+	if pro != nil && err != nil {
 		message += fmt.Sprintf("PRO: %s", pro.FormattedTime())
 	} else {
 		message += fmt.Sprintf("PRO: None")

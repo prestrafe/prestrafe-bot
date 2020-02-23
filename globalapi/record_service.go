@@ -68,7 +68,7 @@ func GetWorldRecord(mapName, mode string) (nub, pro *Record, err error) {
 	return
 }
 
-func GetPersonalBests(mapName string, mode string, steamId64 int64) (nub, pro *Record, err error) {
+func GetPersonalRecord(mapName string, mode string, steamId64 int64) (nub, pro *Record, err error) {
 	nubs, err := GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
