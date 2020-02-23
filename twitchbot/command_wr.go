@@ -19,7 +19,7 @@ func HandleWRCommand(user twitch.User, strings []string) string {
 
 	message := fmt.Sprintf("Global Records on %s [%s]: ", gameState.Map.Name, gameState.Player.Clan)
 	if nub != nil {
-		message += fmt.Sprintf("NUB: %s by %s", nub.FormattedTime(), nub.PlayerName)
+		message += fmt.Sprintf("NUB: %s (%d TP) by %s", nub.FormattedTime(), nub.Teleports, nub.PlayerName)
 	} else {
 		message += fmt.Sprintf("NUB: None")
 	}

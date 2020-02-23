@@ -72,7 +72,7 @@ func GetPersonalRecord(mapName string, mode string, steamId64 int64) (nub, pro *
 	nubs, err := GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
-		"steamid64":         string(steamId64),
+		"steam_id":          convertSteamId(steamId64),
 		"has_teleports":     "true",
 		"tickrate":          "128",
 		"stage":             "0",
@@ -82,7 +82,7 @@ func GetPersonalRecord(mapName string, mode string, steamId64 int64) (nub, pro *
 	pros, err := GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
-		"steamid64":         string(steamId64),
+		"steam_id":          convertSteamId(steamId64),
 		"has_teleports":     "false",
 		"tickrate":          "128",
 		"stage":             "0",
