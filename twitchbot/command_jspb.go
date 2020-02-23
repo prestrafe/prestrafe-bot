@@ -30,18 +30,3 @@ func CreateHandleJSCommand(jumpType, jumpName string) CommandHandler {
 		}
 	}
 }
-
-func HandleLJPBCommand(user twitch.User, strings []string) string {
-	gameState, err := gsi.GetGameState()
-	if err != nil {
-		return "Could not retrieve current game state"
-	}
-
-	jumpStat, err := globalapi.GetJumpStatPersonalBest("longjump", gameState.Player.SteamId)
-
-	if jumpStat != nil && err != nil {
-		return fmt.Sprintf("%s Long Jump record of %s: %.04f units", gameState.Player.Clan, gameState.Player.Name, jumpStat.Distance)
-	} else {
-		return fmt.Sprintf("%s Long Jump record of %s: None", gameState.Player.Clan, gameState.Player.Name)
-	}
-}
