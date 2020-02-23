@@ -18,7 +18,7 @@ func HandleWRCommand(user twitch.User, strings []string) string {
 	nub, pro, err := globalapi.GetWorldRecord(gameState.Map.Name, gameState.Player.TimerMode())
 
 	message := fmt.Sprintf("Global Records on %s [%s]: ", gameState.Map.Name, gameState.Player.Clan)
-	if nub != nil {
+	if nub != nil && err == nil {
 		message += fmt.Sprintf("NUB: %s (%d TP) by %s", nub.FormattedTime(), nub.Teleports, nub.PlayerName)
 	} else {
 		message += fmt.Sprintf("NUB: None")
@@ -26,7 +26,7 @@ func HandleWRCommand(user twitch.User, strings []string) string {
 
 	message += ", "
 
-	if pro != nil {
+	if pro != nil && err == nil {
 		message += fmt.Sprintf("PRO: %s by %s", pro.FormattedTime(), pro.PlayerName)
 	} else {
 		message += fmt.Sprintf("PRO: None")
