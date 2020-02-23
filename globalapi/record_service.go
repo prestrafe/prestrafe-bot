@@ -74,7 +74,6 @@ func GetPersonalRecord(mapName string, mode string, steamId64 int64) (nub, pro *
 		"steam_id":          convertSteamId(steamId64),
 		"tickrate":          "128",
 		"stage":             "0",
-		"overall":           "true",
 		"limit":             "1",
 	})
 	pros, err := GetRecordsTop(QueryParameters{
@@ -84,7 +83,6 @@ func GetPersonalRecord(mapName string, mode string, steamId64 int64) (nub, pro *
 		"has_teleports":     "false",
 		"tickrate":          "128",
 		"stage":             "0",
-		"overall":           "true",
 		"limit":             "1",
 	})
 

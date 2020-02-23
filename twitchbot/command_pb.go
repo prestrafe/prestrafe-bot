@@ -26,7 +26,7 @@ func HandlePBCommand(user twitch.User, strings []string) string {
 
 	message += ", "
 
-	if pro != nil && err != nil {
+	if pro != nil && err == nil {
 		message += fmt.Sprintf("PRO: %s", pro.FormattedTime())
 	} else {
 		message += fmt.Sprintf("PRO: None")
