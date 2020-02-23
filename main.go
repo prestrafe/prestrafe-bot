@@ -39,6 +39,10 @@ func runTwitch(botConfig *config.BotConfig) {
 	pbConfig := botConfig.GetCommandConfig("pb")
 	bot.AddCommand("pb", twitchbot.CreateCommand(pbConfig, 0, twitchbot.HandlePBCommand))
 
+	jsCommandsConfig := botConfig.GetCommandConfig("js")
+	bot.AddCommand("bhpb", twitchbot.CreateCommand(jsCommandsConfig, 0, twitchbot.CreateHandleJSCommand("bhop", "Bunnyhop")))
+	bot.AddCommand("ljpb", twitchbot.CreateCommand(jsCommandsConfig, 0, twitchbot.CreateHandleJSCommand("longjump", "Long Jump")))
+
 	if twitchErr := bot.Start(); twitchErr != nil {
 		panic("Twitch chat error: " + twitchErr.Error())
 	}
