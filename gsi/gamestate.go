@@ -1,8 +1,13 @@
 package gsi
 
 type GameState struct {
+	Auth   *AuthState   `json:"auth"`
 	Map    *MapState    `json:"map"`
 	Player *PlayerState `json:"player"`
+}
+
+type AuthState struct {
+	Token string `json:"token"`
 }
 
 type MapState struct {

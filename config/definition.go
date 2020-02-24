@@ -7,7 +7,8 @@ type BotConfig struct {
 }
 
 type ServerConfig struct {
-	TTL int64 `yaml:"ttl"`
+	VerificationToken string `yaml:"verificationToken"`
+	TTL               int64  `yaml:"ttl"`
 }
 
 type TwitchConfig struct {
