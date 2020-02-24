@@ -28,24 +28,18 @@ func runGameStateIntegration(botConfig *config.BotConfig) {
 }
 
 func runTwitch(botConfig *config.BotConfig) {
-	bot := twitchbot.New(botConfig.Twitch.ChannelName, botConfig.Twitch.BotName, botConfig.Twitch.AccessToken)
+	bot := twitchbot.New(botConfig)
 
-	mapConfig := botConfig.GetCommandConfig("map")
-	bot.AddCommand("map", twitchbot.CreateCommand(mapConfig, 0, twitchbot.HandleMapCommand))
+	bot.AddCommand("map", "map", 0, twitchbot.HandleMapCommand)
+	bot.AddCommand("wr", "wr", 0, twitchbot.HandleWRCommand)
+	bot.AddCommand("pb", "pb", 0, twitchbot.HandlePBCommand)
 
-	wrConfig := botConfig.GetCommandConfig("wr")
-	bot.AddCommand("wr", twitchbot.CreateCommand(wrConfig, 0, twitchbot.HandleWRCommand))
-
-	pbConfig := botConfig.GetCommandConfig("pb")
-	bot.AddCommand("pb", twitchbot.CreateCommand(pbConfig, 0, twitchbot.HandlePBCommand))
-
-	jsCommandsConfig := botConfig.GetCommandConfig("js")
-	bot.AddCommand("bhpb", twitchbot.CreateCommand(jsCommandsConfig, 0, twitchbot.CreateHandleJSCommand("bhop", "Bunnyhop")))
-	bot.AddCommand("dhpb", twitchbot.CreateCommand(jsCommandsConfig, 0, twitchbot.CreateHandleJSCommand("drophop", "Drop Bunnyhop")))
-	bot.AddCommand("lajpb", twitchbot.CreateCommand(jsCommandsConfig, 0, twitchbot.CreateHandleJSCommand("ladderjump", "Ladder Jump")))
-	bot.AddCommand("ljpb", twitchbot.CreateCommand(jsCommandsConfig, 0, twitchbot.CreateHandleJSCommand("longjump", "Long Jump")))
-	bot.AddCommand("mbhpb", twitchbot.CreateCommand(jsCommandsConfig, 0, twitchbot.CreateHandleJSCommand("multibhop", "Multi Bunnyhop")))
-	bot.AddCommand("wjpb", twitchbot.CreateCommand(jsCommandsConfig, 0, twitchbot.CreateHandleJSCommand("weirdjump", "Weird Jump")))
+	bot.AddCommand("bhpb", "js", 0, twitchbot.CreateJSHandler("bhop", "Bunnyhop"))
+	bot.AddCommand("dhpb", "js", 0, twitchbot.CreateJSHandler("drophop", "Drop Bunnyhop"))
+	bot.AddCommand("lajpb", "js", 0, twitchbot.CreateJSHandler("ladderjump", "Ladder Jump"))
+	bot.AddCommand("ljpb", "js", 0, twitchbot.CreateJSHandler("longjump", "Long Jump"))
+	bot.AddCommand("mbhpb", "js", 0, twitchbot.CreateJSHandler("multibhop", "Multi Bunnyhop"))
+	bot.AddCommand("wjpb", "js", 0, twitchbot.CreateJSHandler("weirdjump", "Weird Jump"))
 
 	if twitchErr := bot.Start(); twitchErr != nil {
 		panic("Twitch chat error: " + twitchErr.Error())
