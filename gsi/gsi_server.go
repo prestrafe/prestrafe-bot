@@ -72,6 +72,7 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 
 	if isValidGameState(gameState) {
 		server.gameState = gameState
+		server.gameState.Auth = nil
 	} else {
 		server.gameState = nil
 	}
