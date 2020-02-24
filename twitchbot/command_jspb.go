@@ -9,7 +9,7 @@ import (
 	"prestrafe-bot/gsi"
 )
 
-func CreateHandleJSCommand(jumpType, jumpName string) CommandHandler {
+func CreateJSHandler(jumpType, jumpName string) CommandHandler {
 	return func(user twitch.User, strings []string) string {
 		gameState, err := gsi.GetGameState()
 		if err != nil {

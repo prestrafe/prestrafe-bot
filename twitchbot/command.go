@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"github.com/gempir/go-twitch-irc"
-
-	"prestrafe-bot/config"
 )
 
 type CommandHandler func(twitch.User, []string) string
@@ -19,16 +17,6 @@ type Command struct {
 	Handler    CommandHandler
 
 	lastExecution time.Time
-}
-
-func CreateCommand(config *config.CommandConfig, parameters int, handler CommandHandler) *Command {
-	return &Command{
-		Enabled:    *config.Enabled,
-		SubOnly:    *config.SubOnly,
-		CoolDown:   time.Duration(*config.CoolDown) * time.Second,
-		Parameters: parameters,
-		Handler:    handler,
-	}
 }
 
 func (cmd *Command) CanExecute(user twitch.User, arguments []string) bool {
