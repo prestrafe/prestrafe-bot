@@ -10,7 +10,7 @@ import (
 )
 
 func CreateJSHandler(jumpType, jumpName string) CommandHandler {
-	return func(user twitch.User, strings []string) string {
+	return func(user twitch.User, parameters []string) string {
 		gameState, err := gsi.GetGameState()
 		if err != nil {
 			return "Could not retrieve current game state"

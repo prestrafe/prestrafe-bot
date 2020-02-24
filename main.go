@@ -21,7 +21,7 @@ func main() {
 }
 
 func runGameStateIntegration(botConfig *config.BotConfig) {
-	s := gsi.CreateServer(time.Duration(botConfig.Server.TTL) * time.Second)
+	s := gsi.CreateServer(botConfig.Server.VerificationToken, time.Duration(botConfig.Server.TTL)*time.Second)
 	if err := s.ListenAndServer(); err != nil {
 		panic(err)
 	}
@@ -34,12 +34,14 @@ func runTwitch(botConfig *config.BotConfig) {
 	bot.AddCommand("wr", "wr", 0, twitchbot.HandleWRCommand)
 	bot.AddCommand("pb", "pb", 0, twitchbot.HandlePBCommand)
 
-	bot.AddCommand("bhpb", "js", 0, twitchbot.CreateJSHandler("bhop", "Bunnyhop"))
-	bot.AddCommand("dhpb", "js", 0, twitchbot.CreateJSHandler("drophop", "Drop Bunnyhop"))
-	bot.AddCommand("lajpb", "js", 0, twitchbot.CreateJSHandler("ladderjump", "Ladder Jump"))
-	bot.AddCommand("ljpb", "js", 0, twitchbot.CreateJSHandler("longjump", "Long Jump"))
-	bot.AddCommand("mbhpb", "js", 0, twitchbot.CreateJSHandler("multibhop", "Multi Bunnyhop"))
-	bot.AddCommand("wjpb", "js", 0, twitchbot.CreateJSHandler("weirdjump", "Weird Jump"))
+	bot.AddCommand("bh", "js", 0, twitchbot.CreateJSHandler("bhop", "Bunnyhop"))
+	bot.AddCommand("dh", "js", 0, twitchbot.CreateJSHandler("drophop", "Drop Bunnyhop"))
+	bot.AddCommand("laj", "js", 0, twitchbot.CreateJSHandler("ladderjump", "Ladder Jump"))
+	bot.AddCommand("lj", "js", 0, twitchbot.CreateJSHandler("longjump", "Long Jump"))
+	bot.AddCommand("mbh", "js", 0, twitchbot.CreateJSHandler("multibhop", "Multi Bunnyhop"))
+	bot.AddCommand("wj", "js", 0, twitchbot.CreateJSHandler("weirdjump", "Weird Jump"))
+
+	bot.AddCommand("kz", "help", 0, bot.CreateHelpCommand())
 
 	if twitchErr := bot.Start(); twitchErr != nil {
 		panic("Twitch chat error: " + twitchErr.Error())
