@@ -9,7 +9,7 @@ import (
 	"prestrafe-bot/gsi"
 )
 
-func HandlePBCommand(user twitch.User, strings []string) string {
+func HandlePBCommand(user twitch.User, parameters []string) string {
 	gameState, err := gsi.GetGameState()
 	if err != nil {
 		return "Could not retrieve current game state"
