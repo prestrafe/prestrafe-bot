@@ -1,0 +1,23 @@
+version: "3.5"
+
+services:
+  csgo-server:
+    container_name: "${COMPOSE_PROJECT_NAME}_bot"
+    image: prestrafe/prestrafe-bot:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=prestrafe-bot"
+      - "traefik.docker.network=traefik"
+      - "traefik.port=8337"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.frontend.rule=Host:prestrafe.com;PathPrefixStrip:/twitchbot"
+    volumes:
+      - "./config.yaml:/config.yaml"
+    networks:
+      - traefik
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external:
+      name: traefik
