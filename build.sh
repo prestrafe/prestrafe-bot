@@ -5,6 +5,6 @@ docker-compose down
 docker image rm prestrafe/prestrafe-bot:latest
 
 git pull -p
-docker build . --no-cache --tagprestrafe/prestrafe-bot:latest
+docker build . --no-cache --tag prestrafe/prestrafe-bot:latest
 
 docker-compose up -d
