@@ -12,7 +12,7 @@ import (
 func HandleMapCommand(user twitch.User, parameters []string) string {
 	gameState, err := gsi.GetGameState()
 	if err != nil {
-		return "Could not retrieve current game state"
+		return "Could not retrieve KZ gameplay"
 	}
 
 	globalMap, err := globalapi.GetMapByName(gameState.Map.Name)

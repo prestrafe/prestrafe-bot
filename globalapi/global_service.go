@@ -19,8 +19,6 @@ func globalApiGet(path string, result interface{}, queryParams QueryParameters) 
 		return restErr
 	}
 
-	fmt.Println(response.Request.URL)
-
 	if response.StatusCode() != 200 {
 		return errors.New(fmt.Sprintf("Expected status '%d' but got '%d', with response: %s", 200, response.StatusCode(), response.Body()))
 	}

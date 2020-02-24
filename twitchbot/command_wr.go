@@ -12,7 +12,7 @@ import (
 func HandleWRCommand(user twitch.User, parameters []string) string {
 	gameState, err := gsi.GetGameState()
 	if err != nil {
-		return "Could not retrieve current game state"
+		return "Could not retrieve KZ gameplay"
 	}
 
 	nub, pro, err := globalapi.GetWorldRecord(gameState.Map.Name, gameState.Player.TimerMode())
