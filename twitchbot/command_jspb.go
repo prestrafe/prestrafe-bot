@@ -13,7 +13,7 @@ func CreateJSHandler(jumpType, jumpName string) CommandHandler {
 	return func(user twitch.User, parameters []string) string {
 		gameState, err := gsi.GetGameState()
 		if err != nil {
-			return "Could not retrieve current game state"
+			return "Could not retrieve KZ gameplay"
 		}
 
 		jumpStat, err := globalapi.GetJumpStatPersonalBest(jumpType, gameState.Player.SteamId)
