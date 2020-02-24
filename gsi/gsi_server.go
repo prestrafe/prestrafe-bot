@@ -9,20 +9,24 @@ import (
 )
 
 type Server struct {
-	ttl  time.Duration
-	port int
+	verificationToken string
+	ttl               time.Duration
+	port              int
 
 	gameState  *GameState
 	lastUpdate time.Time
 }
 
-func CreateServer(ttl time.Duration) *Server {
+func CreateServer(verificationToken string, ttl time.Duration) *Server {
 	checkTTL := ttl
 	if ttl == 0 {
 		checkTTL = time.Duration(999)
 	}
 
-	return &Server{ttl: checkTTL}
+	return &Server{
+		verificationToken: verificationToken,
+		ttl:               checkTTL,
+	}
 }
 
 func (server *Server) ListenAndServer() error {
@@ -52,6 +56,11 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 	gameState := new(GameState)
 	if jsonError := json.Unmarshal(body, gameState); jsonError != nil {
 		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if gameState.Auth.Token != server.verificationToken {
+		writer.WriteHeader(http.StatusForbidden)
 		return
 	}
 
