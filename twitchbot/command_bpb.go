@@ -2,6 +2,7 @@ package twitchbot
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gempir/go-twitch-irc"
 
@@ -9,15 +10,20 @@ import (
 	"prestrafe-bot/gsi"
 )
 
-func HandlePBCommand(user twitch.User, parameters []string) string {
+func HandleBonusPBCommand(user twitch.User, parameters []string) string {
 	gameState, err := gsi.GetGameState()
 	if err != nil {
 		return "Could not retrieve KZ gameplay"
 	}
 
-	nub, pro, err := globalapi.GetPersonalRecord(gameState.Map.Name, gameState.Player.TimerMode(), 0, gameState.Player.SteamId)
+	stage := 0
+	if parsedStage, stageErr := strconv.Atoi(parameters[0]); stageErr == nil && parsedStage > 0 {
+		stage = parsedStage
+	}
 
-	message := fmt.Sprintf("PB of %s on %s [%s]: ", gameState.Player.Name, gameState.Map.Name, gameState.Player.Clan)
+	nub, pro, err := globalapi.GetPersonalRecord(gameState.Map.Name, gameState.Player.TimerMode(), stage, gameState.Player.SteamId)
+
+	message := fmt.Sprintf("PB of %s on %s Bonus %d [%s]: ", gameState.Player.Name, gameState.Map.Name, stage, gameState.Player.Clan)
 	if nub != nil && err == nil {
 		message += fmt.Sprintf("NUB: %s (%d TP)", nub.FormattedTime(), nub.Teleports)
 	} else {
