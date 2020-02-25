@@ -15,7 +15,7 @@ func HandlePBCommand(user twitch.User, parameters []string) string {
 		return "Could not retrieve KZ gameplay"
 	}
 
-	nub, pro, err := globalapi.GetPersonalRecord(gameState.Map.Name, gameState.Player.TimerMode(), gameState.Player.SteamId)
+	nub, pro, err := globalapi.GetPersonalRecord(gameState.Map.Name, gameState.Player.TimerMode(), "0", gameState.Player.SteamId)
 
 	message := fmt.Sprintf("PB of %s on %s [%s]: ", gameState.Player.Name, gameState.Map.Name, gameState.Player.Clan)
 	if nub != nil && err == nil {

@@ -15,7 +15,7 @@ func HandleWRCommand(user twitch.User, parameters []string) string {
 		return "Could not retrieve KZ gameplay"
 	}
 
-	nub, pro, err := globalapi.GetWorldRecord(gameState.Map.Name, gameState.Player.TimerMode())
+	nub, pro, err := globalapi.GetWorldRecord(gameState.Map.Name, gameState.Player.TimerMode(), "0")
 
 	message := fmt.Sprintf("Global Records on %s [%s]: ", gameState.Map.Name, gameState.Player.Clan)
 	if nub != nil && err == nil {
