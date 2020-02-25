@@ -41,6 +41,8 @@ func runTwitch(botConfig *config.BotConfig) {
 	bot.AddCommand("mbh", "js", 0, twitchbot.CreateJSHandler("multibhop", "Multi Bunnyhop"))
 	bot.AddCommand("wj", "js", 0, twitchbot.CreateJSHandler("weirdjump", "Weird Jump"))
 
+	bot.AddCommand("globalcheck", "globalcheck", 0, twitchbot.HandleGlobalCheckCommand)
+
 	bot.AddCommand("kz", "help", 0, bot.CreateHelpCommand())
 
 	if twitchErr := bot.Start(); twitchErr != nil {
