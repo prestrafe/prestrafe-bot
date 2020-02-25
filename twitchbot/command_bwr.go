@@ -16,7 +16,7 @@ func HandleBonusWRCommand(user twitch.User, parameters []string) string {
 		return "Could not retrieve KZ gameplay"
 	}
 
-	stage := 0
+	stage := 1
 	if parsedStage, stageErr := strconv.Atoi(parameters[0]); stageErr == nil && parsedStage > 0 {
 		stage = parsedStage
 	}
