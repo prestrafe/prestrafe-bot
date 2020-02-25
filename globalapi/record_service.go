@@ -2,6 +2,7 @@ package globalapi
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type Record struct {
@@ -38,12 +39,12 @@ func GetRecordsTop(criteria QueryParameters) (result []Record, err error) {
 	return
 }
 
-func GetWorldRecord(mapName, mode, stage string) (nub, pro *Record, err error) {
+func GetWorldRecord(mapName, mode string, stage int) (nub, pro *Record, err error) {
 	nubs, err := GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
 		"tickrate":          "128",
-		"stage":             stage,
+		"stage":             strconv.Itoa(stage),
 		"overall":           "true",
 		"limit":             "1",
 	})
@@ -52,7 +53,7 @@ func GetWorldRecord(mapName, mode, stage string) (nub, pro *Record, err error) {
 		"modes_list_string": mode,
 		"has_teleports":     "false",
 		"tickrate":          "128",
-		"stage":             stage,
+		"stage":             strconv.Itoa(stage),
 		"overall":           "true",
 		"limit":             "1",
 	})
@@ -67,13 +68,13 @@ func GetWorldRecord(mapName, mode, stage string) (nub, pro *Record, err error) {
 	return
 }
 
-func GetPersonalRecord(mapName, mode, stage string, steamId64 int64) (nub, pro *Record, err error) {
+func GetPersonalRecord(mapName, mode string, stage int, steamId64 int64) (nub, pro *Record, err error) {
 	nubs, err := GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
 		"steam_id":          convertSteamId(steamId64),
 		"tickrate":          "128",
-		"stage":             stage,
+		"stage":             strconv.Itoa(stage),
 		"limit":             "1",
 	})
 	pros, err := GetRecordsTop(QueryParameters{
@@ -82,7 +83,7 @@ func GetPersonalRecord(mapName, mode, stage string, steamId64 int64) (nub, pro *
 		"steam_id":          convertSteamId(steamId64),
 		"has_teleports":     "false",
 		"tickrate":          "128",
-		"stage":             stage,
+		"stage":             strconv.Itoa(stage),
 		"limit":             "1",
 	})
 

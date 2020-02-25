@@ -32,7 +32,9 @@ func runTwitch(botConfig *config.BotConfig) {
 
 	bot.AddCommand("map", "map", 0, twitchbot.HandleMapCommand)
 	bot.AddCommand("wr", "wr", 0, twitchbot.HandleWRCommand)
+	bot.AddCommand("bwr", "wr", 0, twitchbot.HandleBonusWRCommand)
 	bot.AddCommand("pb", "pb", 0, twitchbot.HandlePBCommand)
+	bot.AddCommand("bpb", "pb", 0, twitchbot.HandleBonusPBCommand)
 
 	bot.AddCommand("bh", "js", 0, twitchbot.CreateJSHandler("bhop", "Bunnyhop"))
 	bot.AddCommand("dh", "js", 0, twitchbot.CreateJSHandler("drophop", "Drop Bunnyhop"))
