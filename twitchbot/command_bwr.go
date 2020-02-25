@@ -19,6 +19,8 @@ func HandleBonusWRCommand(user twitch.User, parameters []string) string {
 	stage := 1
 	if parsedStage, stageErr := strconv.Atoi(parameters[0]); stageErr == nil && parsedStage > 0 {
 		stage = parsedStage
+	} else {
+		return fmt.Sprintf("'%s' is not a valid bonus number.", parameters[0])
 	}
 
 	nub, pro, err := globalapi.GetWorldRecord(gameState.Map.Name, gameState.Player.TimerMode(), stage)
