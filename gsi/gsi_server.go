@@ -41,32 +41,32 @@ func (server *Server) ListenAndServer() error {
 func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
-		log.Fatalf("GSI: Method not allowed from %s\n", request.Host)
+		log.Printf("GSI: Method not allowed from %s\n", request.Host)
 		return
 	}
 	if request.Body == nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		log.Fatalf("GSI: No body from %s\n", request.Host)
+		log.Printf("GSI: No body from %s\n", request.Host)
 		return
 	}
 
 	body, ioError := ioutil.ReadAll(request.Body)
 	if ioError != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		log.Fatalf("GSI: Empty body from %s\n", request.Host)
+		log.Printf("GSI: Empty body from %s\n", request.Host)
 		return
 	}
 
 	gameState := new(GameState)
 	if jsonError := json.Unmarshal(body, gameState); jsonError != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		log.Fatalf("GSI: Bad body from %s\n", request.Host)
+		log.Printf("GSI: Bad body from %s\n", request.Host)
 		return
 	}
 
 	if gameState.Auth.Token != server.verificationToken {
 		writer.WriteHeader(http.StatusForbidden)
-		log.Fatalf("GSI: Invalid toke from %s\n", request.Host)
+		log.Printf("GSI: Invalid toke from %s\n", request.Host)
 		return
 	}
 
