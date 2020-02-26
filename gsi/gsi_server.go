@@ -94,7 +94,6 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 	}
 
 	if server.lastUpdate.Before(time.Now().Add(-server.ttl)) {
-		log.Println("removed gs with get")
 		server.gameState = nil
 	}
 
@@ -124,5 +123,7 @@ func isValidGameState(gameState *GameState) bool {
 	}
 
 	matchString, err := regexp.MatchString("^(.+/)?(kz|kzpro|skz|vnl|xc)_.*$", gameState.Map.Name)
+	log.Println(gameState.Map.Name, matchString, err, matchString && err != nil)
+
 	return matchString && err != nil
 }
