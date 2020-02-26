@@ -117,7 +117,7 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 }
 
 func isValidGameState(gameState *GameState) bool {
-	log.Println("Checking map: ", gameState.Player != nil, gameState.Map != nil, startsWithAny(gameState.Map.Name, []string{"kz", "kzpro", "skz", "vnl", "xc"}))
+	log.Println("Checking map: ", gameState.Player != nil, gameState.Map != nil, gameState.Map.Name)
 
 	if gameState.Player == nil || gameState.Map == nil {
 		return false
