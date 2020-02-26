@@ -78,15 +78,21 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 		server.gameState = gameState
 		server.gameState.Auth = nil
 
-		if strings.HasPrefix(server.gameState.Map.Name, "workshop") {
-			server.gameState.Map.Name = server.gameState.Map.Name[:strings.LastIndex(server.gameState.Map.Name, "/")]
-		}
+		server.gameState.Map.Name = cleanupMapName(server.gameState.Map.Name)
 	} else {
 		server.gameState = nil
 	}
 
 	server.lastUpdate = time.Now()
 	writer.WriteHeader(http.StatusOK)
+}
+
+func cleanupMapName(mapName string) string {
+	if strings.HasPrefix(mapName, "workshop") {
+		return mapName[strings.LastIndex(mapName, "/")+1:]
+	}
+
+	return mapName
 }
 
 func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
