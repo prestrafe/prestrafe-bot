@@ -45,32 +45,32 @@ func (server *Server) ListenAndServer() error {
 func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
-		log.Printf("GSI: Method not allowed from %s\n", request.Host)
+		log.Printf("GSI-UPDATE: Method not allowed from %s\n", request.Host)
 		return
 	}
 	if request.Body == nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI: No body from %s\n", request.Host)
+		log.Printf("GSI-UPDATE: No body from %s\n", request.Host)
 		return
 	}
 
 	body, ioError := ioutil.ReadAll(request.Body)
 	if ioError != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI: Empty body from %s\n", request.Host)
+		log.Printf("GSI-UPDATE: Empty body from %s\n", request.Host)
 		return
 	}
 
 	gameState := new(GameState)
 	if jsonError := json.Unmarshal(body, gameState); jsonError != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI: Bad body from %s\n", request.Host)
+		log.Printf("GSI-UPDATE: Bad body from %s\n", request.Host)
 		return
 	}
 
 	if gameState.Auth.Token != server.verificationToken {
 		writer.WriteHeader(http.StatusForbidden)
-		log.Printf("GSI: Invalid toke from %s\n", request.Host)
+		log.Printf("GSI-UPDATE: Invalid toke from %s\n", request.Host)
 		return
 	}
 
@@ -87,17 +87,10 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 	writer.WriteHeader(http.StatusOK)
 }
 
-func cleanupMapName(mapName string) string {
-	if strings.HasPrefix(mapName, "workshop") {
-		return mapName[strings.LastIndex(mapName, "/")+1:]
-	}
-
-	return mapName
-}
-
 func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
+		log.Printf("GSI-GET: Method not allowed from %s\n", request.Host)
 		return
 	}
 
@@ -113,6 +106,7 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 	response, err := json.Marshal(server.gameState)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
+		log.Printf("GSI-GET: Could not serialize game state %s\n", request.Host)
 		return
 	}
 
@@ -121,6 +115,7 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 
 	if _, err = writer.Write(response); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
+		log.Printf("GSI-GET: Could not write game state %s\n", request.Host)
 		return
 	}
 }
@@ -132,4 +127,12 @@ func isValidGameState(gameState *GameState) bool {
 
 	matchString, err := regexp.MatchString("^(workshop/[0-9]+/)?(kz|kzpro|skz|vnl|xc)_.+$", gameState.Map.Name)
 	return matchString && err == nil
+}
+
+func cleanupMapName(mapName string) string {
+	if strings.HasPrefix(mapName, "workshop") {
+		return mapName[strings.LastIndex(mapName, "/")+1:]
+	}
+
+	return mapName
 }
