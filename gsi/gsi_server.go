@@ -120,5 +120,6 @@ func isValidGameState(gameState *GameState) bool {
 	}
 
 	matchString, err := regexp.MatchString("^(.+/)?(kz|kzpro|skz|vnl|xc)_.*$", gameState.Map.Name)
+	log.Println(gameState.Map.Name, matchString, err)
 	return matchString && err != nil
 }
