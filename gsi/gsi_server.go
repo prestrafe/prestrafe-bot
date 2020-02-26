@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
+	"regexp"
 	"time"
 )
 
@@ -73,8 +73,6 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	log.Println("GSI: Update received -> ", gameState)
-
 	if isValidGameState(gameState) {
 		server.gameState = gameState
 		server.gameState.Auth = nil
@@ -117,19 +115,10 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 }
 
 func isValidGameState(gameState *GameState) bool {
-	log.Println("Checking map: ", gameState.Player != nil, gameState.Map != nil, gameState.Map.Name)
-
 	if gameState.Player == nil || gameState.Map == nil {
 		return false
 	}
 
-	return startsWithAny(gameState.Map.Name, []string{"kz", "kzpro", "skz", "vnl", "xc"})
-}
-
-func startsWithAny(s string, prefixes []string) bool {
-	if len(prefixes) == 0 {
-		return false
-	}
-
-	return strings.HasPrefix(s, prefixes[0]) || startsWithAny(s, prefixes[1:])
+	matchString, err := regexp.MatchString("^(.+/)?(kz|kzpro|skz|vnl|xc)_.*$", gameState.Map.Name)
+	return matchString && err != nil
 }
