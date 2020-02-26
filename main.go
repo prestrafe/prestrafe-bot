@@ -17,6 +17,18 @@ func main() {
 	go runGameStateIntegration(botConfig)
 	go runTwitch(botConfig)
 
+	/*
+		callback := func(channel string, user twitch.User, message twitch.Message) {
+			fmt.Println(user, message)
+		}
+
+		client := twitch.NewClient(botConfig.Twitch.BotName, botConfig.Twitch.AccessToken)
+		client.Join("nykan")
+		client.OnNewUsernoticeMessage(callback)
+		client.OnNewNoticeMessage(callback)
+		client.Connect()
+	*/
+
 	select {}
 }
 
