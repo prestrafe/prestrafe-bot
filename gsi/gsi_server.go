@@ -98,6 +98,7 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 
 	if server.gameState == nil {
 		writer.WriteHeader(http.StatusNotFound)
+		log.Print("No gamestate to return")
 		return
 	}
 
