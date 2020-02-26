@@ -112,10 +112,11 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 }
 
 func isValidGameState(gameState *GameState) bool {
-	hasPlayer := gameState.Player != nil
-	hasMap := gameState.Map != nil
-	hasKzMap := startsWithAny(gameState.Map.Name, []string{"kz", "kzpro", "skz", "vnl", "xc"})
-	return hasPlayer && hasMap && hasKzMap
+	if gameState.Player == nil || gameState.Map == nil {
+		return false
+	}
+
+	return startsWithAny(gameState.Map.Name, []string{"kz", "kzpro", "skz", "vnl", "xc"})
 }
 
 func startsWithAny(s string, prefixes []string) bool {
