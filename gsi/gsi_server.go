@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -76,6 +77,10 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 	if isValidGameState(gameState) {
 		server.gameState = gameState
 		server.gameState.Auth = nil
+
+		if strings.HasPrefix(server.gameState.Map.Name, "workshop") {
+			server.gameState.Map.Name = server.gameState.Map.Name[:strings.LastIndex(server.gameState.Map.Name, "/")]
+		}
 	} else {
 		server.gameState = nil
 	}
@@ -119,6 +124,6 @@ func isValidGameState(gameState *GameState) bool {
 		return false
 	}
 
-	matchString, err := regexp.MatchString("^(.+/)?(kz|kzpro|skz|vnl|xc)_.*$", gameState.Map.Name)
+	matchString, err := regexp.MatchString("^(workshop/[0-9]+/)?(kz|kzpro|skz|vnl|xc)_.+$", gameState.Map.Name)
 	return matchString && err == nil
 }
