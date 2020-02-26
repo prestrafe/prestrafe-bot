@@ -74,12 +74,9 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 	}
 
 	if isValidGameState(gameState) {
-		log.Println("updated gs")
-
 		server.gameState = gameState
 		server.gameState.Auth = nil
 	} else {
-		log.Println("removed gs")
 		server.gameState = nil
 	}
 
@@ -123,7 +120,5 @@ func isValidGameState(gameState *GameState) bool {
 	}
 
 	matchString, err := regexp.MatchString("^(.+/)?(kz|kzpro|skz|vnl|xc)_.*$", gameState.Map.Name)
-	log.Println(gameState.Map.Name, matchString, err, matchString && err != nil)
-
-	return matchString && err != nil
+	return matchString && err == nil
 }
