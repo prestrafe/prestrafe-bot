@@ -14,18 +14,19 @@ func GetGameState() (*GameState, error) {
 		R().
 		Get("http://localhost:8337/get")
 	if restErr != nil {
-		log.Fatalln(restErr)
+		log.Println(restErr)
 		return nil, restErr
 	}
 
 	if response.StatusCode() != 200 {
-		log.Fatalf("Expected status '%d' but got '%d', with response: %s\n", 200, response.StatusCode(), response.Body())
-		return nil, errors.New(fmt.Sprintf("Expected status '%d' but got '%d', with response: %s", 200, response.StatusCode(), response.Body()))
+		errorMessage := fmt.Sprintf("Expected status '%d' but got '%d', with response: %s", 200, response.StatusCode(), response.Body())
+		log.Println(errorMessage)
+		return nil, errors.New(errorMessage)
 	}
 
 	result := new(GameState)
 	if jsonErr := json.Unmarshal(response.Body(), result); jsonErr != nil {
-		log.Fatalln(jsonErr)
+		log.Println(jsonErr)
 		return nil, jsonErr
 	}
 
