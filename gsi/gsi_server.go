@@ -67,13 +67,13 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	log.Println("GSI: Update received -> ", gameState)
-
 	if gameState.Auth.Token != server.verificationToken {
 		writer.WriteHeader(http.StatusForbidden)
 		log.Printf("GSI: Invalid toke from %s\n", request.Host)
 		return
 	}
+
+	log.Println("GSI: Update received -> ", gameState)
 
 	if isValidGameState(gameState) {
 		server.gameState = gameState
@@ -117,7 +117,7 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 }
 
 func isValidGameState(gameState *GameState) bool {
-	log.Println("Checking map: ", gameState.Player != nil, gameState.Map != nil)
+	log.Println("Checking map: ", gameState.Player != nil, gameState.Map != nil, startsWithAny(gameState.Map.Name, []string{"kz", "kzpro", "skz", "vnl", "xc"}))
 
 	if gameState.Player == nil || gameState.Map == nil {
 		return false
