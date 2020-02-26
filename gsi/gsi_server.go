@@ -34,6 +34,9 @@ func (server *Server) ListenAndServer() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/update", server.handleGsiUpdate)
 	mux.HandleFunc("/get", server.handleGsiGet)
+	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
+	})
 
 	return http.ListenAndServe(":8337", mux)
 }
