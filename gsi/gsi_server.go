@@ -39,6 +39,8 @@ func (server *Server) ListenAndServer() error {
 }
 
 func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
+	log.Printf("Method: %s, URL: %s\n", request.Method, request.URL)
+
 	if request.Method != "POST" {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
 		log.Fatalf("GSI: Method not allowed from %s\n", request.Host)
