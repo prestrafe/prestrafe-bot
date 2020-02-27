@@ -11,16 +11,16 @@ type JumpStat struct {
 	TickRate      int     `json:"tickrate"`
 	MslCount      int     `json:"msl_count"`
 	StrafeCount   int     `json:"strafe_count"`
-	IsCrouchBind  bool    `json:"is_crouch_bind"`
-	IsForwardBind bool    `json:"is_forward_bind"`
-	IsCrouchBoost bool    `json:"is_crouch_boost"`
+	IsCrouchBind  int     `json:"is_crouch_bind"`
+	IsForwardBind int     `json:"is_forward_bind"`
+	IsCrouchBoost int     `json:"is_crouch_boost"`
 	UpdatedById   int     `json:"updated_by_id"`
 	CreatedOn     string  `json:"created_on"`
 	UpdatedOn     string  `json:"updated_on"`
 }
 
 func (js *JumpStat) HasBinds() bool {
-	return js.IsCrouchBind || js.IsForwardBind
+	return js.IsCrouchBind != 0 || js.IsForwardBind != 0
 }
 
 func GetJumpStatTop(jumpType string, criteria QueryParameters) (result []JumpStat, err error) {
