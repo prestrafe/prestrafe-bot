@@ -21,7 +21,7 @@ func CreateJSHandler(jumpType, jumpName string) CommandHandler {
 		if jumpStat != nil && err != nil {
 			binds := "no binds"
 			if jumpStat.HasBinds() {
-				binds = "binds"
+				binds = "with binds"
 			}
 
 			return fmt.Sprintf("%s record of %s: %.04f units, %d strafes, %s", jumpName, gameState.Player.Name, jumpStat.Distance, jumpStat.StrafeCount, binds)
