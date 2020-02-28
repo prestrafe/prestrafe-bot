@@ -1,4 +1,4 @@
-package twitchbot
+package old
 
 import (
 	"sort"

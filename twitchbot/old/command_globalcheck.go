@@ -1,4 +1,4 @@
-package twitchbot
+package old
 
 import "github.com/gempir/go-twitch-irc"
 
