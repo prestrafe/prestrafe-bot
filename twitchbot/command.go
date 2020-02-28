@@ -27,7 +27,7 @@ type ChatCommand interface {
 	// Tries to handle a chat message from a chat user. If the command is able to identify that the message is handled
 	// by it, this method returns true, regardless if the command later produces an error. It returns false only if the
 	// command does not claim responsibility for the message.
-	TryHandle(user twitch.User, message twitch.Message, messageSink ChatMessageSink) bool
+	TryHandle(user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool
 	// Returns a string representation of the command. This is usually the signature of the command.
 	String() string
 }
@@ -123,7 +123,7 @@ func (c *chatCommand) parseParameters(message string) map[string]string {
 	groups := make(map[string]string)
 
 	for i, name := range c.pattern.SubexpNames() {
-		if i > 0 && i <= len(match) {
+		if i > 0 && i <= len(match) && len(name) > 0 && len(match[i]) > 0 {
 			groups[name] = match[i]
 		}
 	}

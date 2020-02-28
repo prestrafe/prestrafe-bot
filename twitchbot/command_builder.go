@@ -34,6 +34,7 @@ type ChatCommandBuilder interface {
 	WithHandler(handler ChatCommandHandler) ChatCommandBuilder
 	// Will build a new command instance, initialized with the values passed to the builder instance.
 	Build() ChatCommand
+	build() *chatCommand
 }
 
 // Creates a new command builder. The builder will already be initialized with the command name, as setting a name is
@@ -51,12 +52,12 @@ func NewChatCommandBuilder(name string) ChatCommandBuilder {
 	}
 }
 
-func (c chatCommand) WithAlias(alias ...string) ChatCommandBuilder {
+func (c *chatCommand) WithAlias(alias ...string) ChatCommandBuilder {
 	c.aliases = append(c.aliases, alias...)
 	return c
 }
 
-func (c chatCommand) WithParameter(name string, required bool, pattern string) ChatCommandBuilder {
+func (c *chatCommand) WithParameter(name string, required bool, pattern string) ChatCommandBuilder {
 	c.parameters = append(c.parameters, chatCommandParameter{
 		name:     name,
 		required: required,
@@ -65,22 +66,26 @@ func (c chatCommand) WithParameter(name string, required bool, pattern string) C
 	return c
 }
 
-func (c chatCommand) WithSubOnly(subOnly bool) ChatCommandBuilder {
+func (c *chatCommand) WithSubOnly(subOnly bool) ChatCommandBuilder {
 	c.subOnly = subOnly
 	return c
 }
 
-func (c chatCommand) WithCoolDown(coolDown time.Duration) ChatCommandBuilder {
+func (c *chatCommand) WithCoolDown(coolDown time.Duration) ChatCommandBuilder {
 	c.coolDown = coolDown
 	return c
 }
 
-func (c chatCommand) WithHandler(handler ChatCommandHandler) ChatCommandBuilder {
+func (c *chatCommand) WithHandler(handler ChatCommandHandler) ChatCommandBuilder {
 	c.handler = handler
 	return c
 }
 
-func (c chatCommand) Build() ChatCommand {
+func (c *chatCommand) Build() ChatCommand {
+	return c.build()
+}
+
+func (c *chatCommand) build() *chatCommand {
 	namePattern := strings.Join(append(c.aliases, c.name), "|")
 	commandPattern := fmt.Sprintf("%s(%s)", commandPrefix, namePattern)
 

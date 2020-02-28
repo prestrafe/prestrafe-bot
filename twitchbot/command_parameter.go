@@ -22,5 +22,5 @@ func (p *chatCommandParameter) getPattern() string {
 	if !p.required {
 		requiredFlag = "?"
 	}
-	return fmt.Sprintf("(?<%s>%s)%s", p.name, p.pattern, requiredFlag)
+	return fmt.Sprintf("(?P<%s>%s)%s", p.name, p.pattern, requiredFlag)
 }
