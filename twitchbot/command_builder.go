@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"prestrafe-bot/config"
 )
 
 // The command builder is used to create new command definitions in a declarative, readable and type-safe way.
@@ -23,6 +25,13 @@ type ChatCommandBuilder interface {
 	// 	- A regular expression pattern that needs to be matched by values of the parameter.
 	// By default no parameters will be defined.
 	WithParameter(name string, required bool, pattern string) ChatCommandBuilder
+	// Applies a chat command configuration element onto the builder. Calling this method may overwrite any previously
+	// set configuration values of the receiving builder, but future calls may also overwrite parts of the passed
+	// configuration. It is also possible to call this method more then once to layer configurations on top of one
+	// another.
+	WithConfig(config *config.ChatCommandConfig) ChatCommandBuilder
+	// Sets the command that is being build to be enabled or disabled. By default the command will be enabled.
+	WithEnabled(enabled bool) ChatCommandBuilder
 	// Sets the command that is being build to be only available to subscribers, moderators and broadcasters. By default
 	// the command will be available to everyone in chat.
 	WithSubOnly(subOnly bool) ChatCommandBuilder
@@ -44,6 +53,7 @@ func NewChatCommandBuilder(name string) ChatCommandBuilder {
 		name:       name,
 		aliases:    []string{},
 		parameters: []chatCommandParameter{},
+		enabled:    true,
 		subOnly:    false,
 		coolDown:   15 * time.Second,
 		handler: func(parameters map[string]string) (msg string, err error) {
@@ -63,6 +73,25 @@ func (c *chatCommand) WithParameter(name string, required bool, pattern string) 
 		required: required,
 		pattern:  pattern,
 	})
+	return c
+}
+
+func (c *chatCommand) WithConfig(config *config.ChatCommandConfig) ChatCommandBuilder {
+	if config.Enabled != nil {
+		c.enabled = *config.Enabled
+	}
+	if config.SubOnly != nil {
+		c.subOnly = *config.SubOnly
+	}
+	if config.CoolDown != nil {
+		c.coolDown = time.Duration(*config.CoolDown) * time.Second
+	}
+
+	return c
+}
+
+func (c *chatCommand) WithEnabled(enabled bool) ChatCommandBuilder {
+	c.enabled = enabled
 	return c
 }
 

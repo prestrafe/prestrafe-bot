@@ -36,7 +36,7 @@ func (bot *Bot) Start() error {
 	return bot.client.Connect()
 }
 
-func createCommand(config *config.CommandConfig, parameters int, handler CommandHandler) *Command {
+func createCommand(config *config.ChatCommandConfig, parameters int, handler CommandHandler) *Command {
 	return &Command{
 		Enabled:    *config.Enabled,
 		SubOnly:    *config.SubOnly,
