@@ -33,7 +33,7 @@ func main() {
 }
 
 func runGameStateIntegration(botConfig *config.BotConfig) {
-	s := gsi.CreateServer(botConfig.Server.VerificationToken, time.Duration(botConfig.Server.TTL)*time.Second)
+	s := gsi.CreateServer(botConfig.Gsi, time.Duration(botConfig.Server.TTL)*time.Second)
 	if err := s.ListenAndServer(); err != nil {
 		panic(err)
 	}

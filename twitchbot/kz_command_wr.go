@@ -4,18 +4,15 @@ import (
 	"errors"
 	"fmt"
 
-	"prestrafe-bot/config"
 	"prestrafe-bot/globalapi"
 	"prestrafe-bot/gsi"
 )
 
-func CreateWrCommand(config *config.ChatCommandConfig) ChatCommand {
+func CreateWrCommandBuilder() ChatCommandBuilder {
 	return NewChatCommandBuilder("wr").
-		WithConfig(config).
 		WithAlias("gr", "gwr", "top").
 		WithParameter("map", false, "[A-Za-z0-9_]").
-		WithHandler(handleWrCommand).
-		Build()
+		WithHandler(handleWrCommand)
 }
 
 func handleWrCommand(parameters map[string]string) (message string, err error) {
