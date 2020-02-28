@@ -36,6 +36,7 @@ type chatCommand struct {
 	name          string
 	aliases       []string
 	parameters    []chatCommandParameter
+	enabled       bool
 	subOnly       bool
 	coolDown      time.Duration
 	handler       ChatCommandHandler
@@ -44,9 +45,14 @@ type chatCommand struct {
 }
 
 func (c *chatCommand) TryHandle(user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool {
+	if !c.enabled {
+		return false
+	}
+
 	if !c.matchesPrefix(message.Text) {
 		return false
 	}
+
 	if !c.pattern.MatchString(message.Text) {
 		messageSink("Your message did not matched the usage of the command: %s", c)
 		return true

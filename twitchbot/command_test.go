@@ -6,6 +6,8 @@ import (
 
 	"github.com/gempir/go-twitch-irc"
 	"github.com/stretchr/testify/assert"
+
+	"prestrafe-bot/config"
 )
 
 func TestCommandBuilderDefaults(t *testing.T) {
@@ -15,8 +17,9 @@ func TestCommandBuilderDefaults(t *testing.T) {
 		assert.Equal(t, "name", command.name)
 		assert.Empty(t, command.aliases)
 		assert.Empty(t, command.parameters)
+		assert.True(t, command.enabled)
 		assert.False(t, command.subOnly)
-		assert.Equal(t, 5*time.Second, command.coolDown)
+		assert.Equal(t, 15*time.Second, command.coolDown)
 		assert.NotNil(t, command.handler)
 	}
 }
@@ -25,6 +28,7 @@ func TestCommandBuilder(t *testing.T) {
 	command := NewChatCommandBuilder("name").
 		WithAlias("alias1", "alias2").
 		WithParameter("param", false, ".*").
+		WithEnabled(false).
 		WithSubOnly(true).
 		WithCoolDown(10 * time.Second).
 		WithHandler(func(parameters map[string]string) (msg string, err error) {
@@ -47,9 +51,32 @@ func TestCommandBuilder(t *testing.T) {
 			assert.Equal(t, "(?P<param>.*)?", parameter.getPattern())
 		}
 
+		assert.False(t, command.enabled)
 		assert.True(t, command.subOnly)
 		assert.Equal(t, 10*time.Second, command.coolDown)
 		assert.NotNil(t, command.handler)
+	}
+}
+
+func TestCommandBuilderWithConfig(t *testing.T) {
+	enabled := false
+	subOnly := true
+	coolDown := 10
+
+	command := NewChatCommandBuilder("name").
+		WithConfig(&config.ChatCommandConfig{
+			Name:     "",
+			Enabled:  &enabled,
+			SubOnly:  &subOnly,
+			CoolDown: &coolDown,
+		}).
+		build()
+
+	if assert.NotNil(t, command) {
+		assert.Equal(t, "name", command.name)
+		assert.False(t, command.enabled)
+		assert.True(t, command.subOnly)
+		assert.Equal(t, 10*time.Second, command.coolDown)
 	}
 }
 
@@ -119,17 +146,29 @@ func TestStringer(t *testing.T) {
 }
 
 func TestTryHandle(t *testing.T) {
-	command := NewChatCommandBuilder("name").
+	enabledCommand := NewChatCommandBuilder("name").
 		WithParameter("param", true, "[0-9]+").
 		WithSubOnly(true).
 		build()
 	normalUser := &twitch.User{Badges: map[string]int{}}
 	abyss := func(format string, a ...interface{}) {}
 
-	assert.False(t, command.TryHandle(normalUser, &twitch.Message{Text: ""}, abyss))
-	assert.False(t, command.TryHandle(normalUser, &twitch.Message{Text: "!other"}, abyss))
-	assert.False(t, command.TryHandle(normalUser, &twitch.Message{Text: "!other 42"}, abyss))
+	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: ""}, abyss))
+	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other"}, abyss))
+	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other 42"}, abyss))
 
-	assert.True(t, command.TryHandle(normalUser, &twitch.Message{Text: "!name"}, abyss))
-	assert.True(t, command.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, abyss))
+	assert.True(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name"}, abyss))
+	assert.True(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, abyss))
+
+	disabledCommand := NewChatCommandBuilder("name").
+		WithParameter("param", true, "[0-9]+").
+		WithEnabled(false).
+		build()
+
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: ""}, abyss))
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other"}, abyss))
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other 42"}, abyss))
+
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name"}, abyss))
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, abyss))
 }
