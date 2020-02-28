@@ -45,7 +45,7 @@ func NewChatCommandBuilder(name string) ChatCommandBuilder {
 		aliases:    []string{},
 		parameters: []chatCommandParameter{},
 		subOnly:    false,
-		coolDown:   5 * time.Second,
+		coolDown:   15 * time.Second,
 		handler: func(parameters map[string]string) (msg string, err error) {
 			return "", errors.New("this command is not yet implemented")
 		},
