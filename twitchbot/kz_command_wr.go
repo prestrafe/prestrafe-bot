@@ -11,7 +11,7 @@ import (
 func NewWRCommand(gsiClient gsi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("wr").
 		WithAlias("gr", "gwr", "top").
-		WithParameter("map", false, "[A-Za-z0-9_]").
+		WithParameter("map", false, "[A-Za-z0-9_]+").
 		WithHandler(createWRHandler(gsiClient))
 }
 
