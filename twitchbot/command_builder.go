@@ -121,7 +121,7 @@ func (c *chatCommand) build() *chatCommand {
 	commandPattern := fmt.Sprintf("%s(%s)", commandPrefix, namePattern)
 
 	for _, p := range c.parameters {
-		commandPattern += fmt.Sprintf("\\s+%s", p.getPattern())
+		commandPattern += fmt.Sprintf("(\\s+|$)%s", p.getPattern())
 	}
 
 	c.pattern = regexp.MustCompile(commandPattern)

@@ -10,7 +10,7 @@ import (
 
 func NewMapCommand(gsiClient gsi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("map").
-		WithParameter("map", false, "[A-Za-z0-9_]").
+		WithParameter("map", false, "[A-Za-z0-9_]+").
 		WithHandler(createMapHandler(gsiClient))
 }
 

@@ -13,7 +13,7 @@ func NewBPBCommand(gsiClient gsi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("bpb").
 		WithAlias("bpr").
 		WithParameter("bonus", false, "[0-9]").
-		WithParameter("map", false, "[A-Za-z0-9_]").
+		WithParameter("map", false, "[A-Za-z0-9_]+").
 		WithHandler(createBPBHandler(gsiClient))
 }
 

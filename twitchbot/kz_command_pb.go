@@ -11,7 +11,7 @@ import (
 func NewPBCommand(gsiClient gsi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("pb").
 		WithAlias("pr").
-		WithParameter("map", false, "[A-Za-z0-9_]").
+		WithParameter("map", false, "[A-Za-z0-9_]+").
 		WithHandler(createPBHandler(gsiClient))
 }
 

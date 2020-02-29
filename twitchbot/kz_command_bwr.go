@@ -13,7 +13,7 @@ func NewBWRCommand(gsiClient gsi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("bwr").
 		WithAlias("bgr", "bgwr", "btop").
 		WithParameter("bonus", false, "[0-9]").
-		WithParameter("map", false, "[A-Za-z0-9_]").
+		WithParameter("map", false, "[A-Za-z0-9_]+").
 		WithHandler(createBWRHandler(gsiClient))
 }
 
