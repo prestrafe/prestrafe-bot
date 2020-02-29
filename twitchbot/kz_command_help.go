@@ -13,7 +13,7 @@ func NewHelpCommand(commands []ChatCommand) ChatCommandBuilder {
 
 			for _, command := range commands {
 				if command.Enabled() {
-					commandHelp := command.String()
+					commandHelp := commandPrefix + command.Name()
 
 					if command.SubOnly() {
 						commandHelp += " (sub only)"
