@@ -143,8 +143,8 @@ func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *ht
 
 	for {
 		select {
-		case gameState := <-channel:
-			if err := conn.WriteJSON(gameState); err != nil {
+		case gameState, more := <-channel:
+			if err := conn.WriteJSON(gameState); err != nil || !more {
 				_ = conn.Close()
 				return
 			}
