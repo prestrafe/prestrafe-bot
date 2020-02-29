@@ -75,12 +75,6 @@ func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	if gameState.Auth.Token != server.verificationToken {
-		writer.WriteHeader(http.StatusForbidden)
-		log.Printf("GSI-UPDATE: Invalid toke from %s\n", request.Host)
-		return
-	}
-
 	authToken := gameState.Auth.Token
 	gameState.Auth = nil
 
