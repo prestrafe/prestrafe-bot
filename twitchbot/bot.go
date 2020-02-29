@@ -1,64 +1,59 @@
 package twitchbot
 
 import (
-	"strings"
-	"time"
-
 	"github.com/gempir/go-twitch-irc"
 
 	"prestrafe-bot/config"
+	"prestrafe-bot/gsi"
 )
 
-type Bot struct {
-	config   *config.BotConfig
-	client   *twitch.Client
-	commands map[string]*Command
+// This interface defines the public API of the chat bot. The API is pretty slim, as most of the work is done
+// internally.
+type ChatBot interface {
+	// Joins a channel that is defined inside the passed channel configuration.
+	Join(config *config.ChannelConfig) ChatBot
+	// Starts up the chat bot in the thread that is calling this method. It blocks until an error occurs or the bot is
+	// stopped.
+	Start() error
+	// Stops the bot and disconnects it from the Twitch API.
+	Stop() error
 }
 
-func New(botConfig *config.BotConfig) *Bot {
-	client := twitch.NewClient(botConfig.Twitch.BotName, botConfig.Twitch.AccessToken)
-	client.Join(botConfig.Twitch.ChannelName)
+type chatBot struct {
+	gsiConfig *config.GsiConfig
+	channels  map[string]botChannel
+	client    *twitch.Client
+}
 
-	return &Bot{
-		config:   botConfig,
-		client:   client,
-		commands: map[string]*Command{},
+// Creates a new chat bot instance.
+func NewChatBot(twitchConfig *config.TwitchConfig, gsiConfig *config.GsiConfig) ChatBot {
+	return &chatBot{
+		gsiConfig,
+		make(map[string]botChannel),
+		twitch.NewClient(twitchConfig.UserName, twitchConfig.AccessToken),
 	}
 }
 
-func (bot *Bot) AddCommand(name, configKey string, parameters int, handler CommandHandler) *Bot {
-	bot.commands[name] = createCommand(bot.config.GetCommandConfig(configKey), parameters, handler)
-	return bot
+func (c chatBot) Join(config *config.ChannelConfig) ChatBot {
+	gsiClient := gsi.NewClient("localhost", c.gsiConfig.Port, config.GsiToken)
+
+	channel := newChannel(c.client, gsiClient, config)
+
+	c.client.Join(channel.name)
+	c.channels[channel.name] = *channel
+
+	return c
 }
 
-func (bot *Bot) Start() error {
-	bot.client.OnNewMessage(bot.handleMessage)
-	return bot.client.Connect()
+func (c chatBot) Start() error {
+	c.client.OnNewMessage(func(channel string, user twitch.User, message twitch.Message) {
+		if botChannel, hasChannel := c.channels[channel]; hasChannel {
+			botChannel.handle(&user, &message)
+		}
+	})
+	return c.client.Connect()
 }
 
-func createCommand(config *config.CommandConfig, parameters int, handler CommandHandler) *Command {
-	return &Command{
-		Enabled:    *config.Enabled,
-		SubOnly:    *config.SubOnly,
-		CoolDown:   time.Duration(*config.CoolDown) * time.Second,
-		Parameters: parameters,
-		Handler:    handler,
-	}
-}
-
-func (bot *Bot) handleMessage(channel string, user twitch.User, message twitch.Message) {
-	commandName, parameters := parseCommand(message.Text)
-	if command, contains := bot.commands[commandName]; contains && command.CanExecute(user, parameters) {
-		bot.client.Say(channel, command.Execute(user, parameters))
-	}
-}
-
-func parseCommand(message string) (name string, parameters []string) {
-	if strings.HasPrefix(message, "!") {
-		parts := strings.Split(message[1:], " ")
-		name = parts[0]
-		parameters = parts[1:]
-	}
-
-	return
+func (c chatBot) Stop() error {
+	return c.client.Disconnect()
 }
