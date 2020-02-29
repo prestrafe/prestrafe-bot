@@ -3,6 +3,7 @@ package gsi
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 
 	"prestrafe-bot/config"
 )
@@ -28,6 +30,7 @@ type server struct {
 	port       int
 	store      Store
 	httpServer *http.Server
+	upgrader   *websocket.Upgrader
 }
 
 // Creates a new GSI server.
@@ -36,22 +39,29 @@ func NewServer(config *config.GsiConfig) Server {
 		config.Port,
 		NewStore(time.Duration(config.TTL) * time.Second),
 		nil,
+		nil,
 	}
 }
 
 func (server *server) Start() error {
 	router := mux.NewRouter()
-	router.Path("/gsi").Methods("GET").HandlerFunc(server.handleGsiGet)
-	router.Path("/gsi").Methods("POST").HandlerFunc(server.handleGsiUpdate)
+	router.Path("/get").Methods("GET").HandlerFunc(server.handleGsiGet)
+	router.Path("/update").Methods("POST").HandlerFunc(server.handleGsiUpdate)
+	router.Path("/websocket").Methods("GET").HandlerFunc(server.handleGsiWebsocket)
 	router.PathPrefix("/").HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
 	})
 
 	server.httpServer = &http.Server{
-		Addr:         "0.0.0.0",
+		Addr:         fmt.Sprintf("0.0.0.0:%d", server.port),
 		Handler:      router,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
+	}
+
+	server.upgrader = &websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
 	}
 
 	return server.httpServer.ListenAndServe()
@@ -64,6 +74,7 @@ func (server *server) Stop() error {
 func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
 	if !strings.HasPrefix(request.Header.Get("Authorization"), "GSI ") {
 		writer.WriteHeader(http.StatusUnauthorized)
+		return
 	}
 
 	authToken := request.Header.Get("Authorization")[4:]
@@ -112,6 +123,32 @@ func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 	}
 
 	writer.WriteHeader(http.StatusOK)
+}
+
+func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *http.Request) {
+	if !strings.HasPrefix(request.Header.Get("Authorization"), "GSI ") {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	conn, err := server.upgrader.Upgrade(writer, request, nil)
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	authToken := request.Header.Get("Authorization")[4:]
+	channel := server.store.Channel(authToken)
+
+	for {
+		select {
+		case gameState := <-channel:
+			if err := conn.WriteJSON(gameState); err != nil {
+				writer.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+		}
+	}
 }
 
 func isValidGameState(gameState *GameState) bool {
