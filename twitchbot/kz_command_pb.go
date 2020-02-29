@@ -8,14 +8,14 @@ import (
 	"prestrafe-bot/gsi"
 )
 
-func NewWRCommand(gsiClient gsi.Client) ChatCommandBuilder {
-	return NewChatCommandBuilder("wr").
-		WithAlias("gr", "gwr", "top").
+func NewPBCommand(gsiClient gsi.Client) ChatCommandBuilder {
+	return NewChatCommandBuilder("pb").
+		WithAlias("pr").
 		WithParameter("map", false, "[A-Za-z0-9_]").
-		WithHandler(createWrHandler(gsiClient))
+		WithHandler(createPbHandler(gsiClient))
 }
 
-func createWrHandler(gsiClient gsi.Client) ChatCommandHandler {
+func createPbHandler(gsiClient gsi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
 
@@ -28,11 +28,11 @@ func createWrHandler(gsiClient gsi.Client) ChatCommandHandler {
 			mapName = gameState.Map.Name
 		}
 
-		nub, pro, apiError := globalapi.GetWorldRecord(mapName, gameState.Player.TimerMode(), 0)
+		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), 0, gameState.Player.SteamId)
 
-		message = fmt.Sprintf("Global Records on %s [%s]: ", mapName, gameState.Player.Clan)
+		message = fmt.Sprintf("PB of %s on %s [%s]: ", gameState.Player.Name, gameState.Map.Name, gameState.Player.Clan)
 		if nub != nil && apiError == nil {
-			message += fmt.Sprintf("NUB: %s (%d TP) by %s", nub.FormattedTime(), nub.Teleports, nub.PlayerName)
+			message += fmt.Sprintf("NUB: %s (%d TP)", nub.FormattedTime(), nub.Teleports)
 		} else {
 			message += fmt.Sprintf("NUB: None")
 		}
@@ -40,7 +40,7 @@ func createWrHandler(gsiClient gsi.Client) ChatCommandHandler {
 		message += ", "
 
 		if pro != nil && apiError == nil {
-			message += fmt.Sprintf("PRO: %s by %s", pro.FormattedTime(), pro.PlayerName)
+			message += fmt.Sprintf("PRO: %s", pro.FormattedTime())
 		} else {
 			message += fmt.Sprintf("PRO: None")
 		}

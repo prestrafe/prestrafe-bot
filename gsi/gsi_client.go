@@ -13,26 +13,24 @@ import (
 // current game state of a player, by connecting to a running GSI server. It handles authentication automatically.
 type Client interface {
 	// Retrieves the game state for the player that this client connects to.
-	GetGameState(authToken string) (*GameState, error)
+	GetGameState() (*GameState, error)
 }
 
 type client struct {
-	Host string
-	Port int
+	host      string
+	port      int
+	authToken string
 }
 
-func NewClient(host string, port int) Client {
-	return &client{
-		Host: host,
-		Port: port,
-	}
+func NewClient(host string, port int, authToken string) Client {
+	return &client{host, port, authToken}
 }
 
-func (c *client) GetGameState(authToken string) (*GameState, error) {
+func (c *client) GetGameState() (*GameState, error) {
 	response, restErr := resty.New().
 		R().
-		SetHeader("Authorization", fmt.Sprintf("GSI %s", authToken)).
-		Get(fmt.Sprintf("http://%s:%d/get", c.Host, c.Port))
+		SetHeader("Authorization", fmt.Sprintf("GSI %s", c.authToken)).
+		Get(fmt.Sprintf("http://%s:%d/get", c.host, c.port))
 	if restErr != nil {
 		log.Println(restErr)
 		return nil, restErr
