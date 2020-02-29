@@ -6,9 +6,10 @@ import (
 )
 
 type GameState struct {
-	Auth   *AuthState   `json:"auth"`
-	Map    *MapState    `json:"map"`
-	Player *PlayerState `json:"player"`
+	Auth     *AuthState     `json:"auth"`
+	Map      *MapState      `json:"map"`
+	Player   *PlayerState   `json:"player"`
+	Provider *ProviderState `json:"provider"`
 }
 
 func (gameState *GameState) IsKZGameState() bool {
@@ -22,6 +23,14 @@ func (gameState *GameState) IsKZGameState() bool {
 
 type AuthState struct {
 	Token string `json:"token"`
+}
+
+type ProviderState struct {
+	Name      string `json:"name"`
+	AppId     int    `json:"appid"`
+	Version   int    `json:"version"`
+	SteamId   int64  `json:"steamid,string"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 type MapState struct {

@@ -39,7 +39,7 @@ func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 			return fmt.Sprintf("'%s' is not a valid bonus number.", bonus), nil
 		}
 
-		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), bonusNumber, gameState.Player.SteamId)
+		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), bonusNumber, gameState.Provider.SteamId)
 
 		message = fmt.Sprintf("PB of %s on %s Bonus %d [%s]: ", gameState.Player.Name, mapName, bonusNumber, gameState.Player.Clan)
 		if nub != nil && apiError == nil {

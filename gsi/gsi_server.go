@@ -46,7 +46,7 @@ func (server *server) Start() error {
 	router := mux.NewRouter()
 	router.Path("/get").Methods("GET").HandlerFunc(server.handleGsiGet)
 	router.Path("/update").Methods("POST").HandlerFunc(server.handleGsiUpdate)
-	router.Path("/websocket").Methods("GET").HandlerFunc(server.handleGsiWebsocket)
+	router.Path("/websocket/{authToken}").Methods("GET").HandlerFunc(server.handleGsiWebsocket)
 	router.PathPrefix("/").HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
 	})
@@ -117,7 +117,7 @@ func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 	authToken := gameState.Auth.Token
 	gameState.Auth = nil
 
-	if gameState.Player != nil {
+	if gameState.Provider != nil {
 		server.store.Put(authToken, gameState)
 	} else {
 		server.store.Remove(authToken)
@@ -127,7 +127,8 @@ func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 }
 
 func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *http.Request) {
-	if !strings.HasPrefix(request.Header.Get("Authorization"), "GSI ") {
+	authToken, authTokenPresent := mux.Vars(request)["authToken"]
+	if !authTokenPresent {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -137,7 +138,6 @@ func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *ht
 		return
 	}
 
-	authToken := request.Header.Get("Authorization")[4:]
 	channel := server.store.Channel(authToken)
 
 	for {

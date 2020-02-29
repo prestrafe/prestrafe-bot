@@ -17,7 +17,7 @@ func NewJumpStatCommand(gsiClient gsi.Client, name, jumpType, jumpName string) C
 				return "", errors.New("could not retrieve KZ game play")
 			}
 
-			jumpStat, apiError := globalapi.GetJumpStatPersonalBest(jumpType, gameState.Player.SteamId)
+			jumpStat, apiError := globalapi.GetJumpStatPersonalBest(jumpType, gameState.Provider.SteamId)
 			if jumpStat != nil && apiError == nil {
 				binds := "no binds"
 				if jumpStat.HasBinds() {
