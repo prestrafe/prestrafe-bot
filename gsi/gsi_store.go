@@ -42,8 +42,9 @@ func (s *store) Channel(authToken string) chan *GameState {
 }
 
 func (s *store) Get(authToken string) (gameState *GameState, present bool) {
-	if cached, present := s.internalCache.Get(authToken); present {
+	if cached, isCached := s.internalCache.Get(authToken); isCached {
 		gameState = cached.(*GameState)
+		present = isCached
 	}
 	return
 }
