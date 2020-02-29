@@ -38,7 +38,7 @@ func runGameStateIntegration(botConfig *config.BotConfig) {
 }
 
 func runTwitch(botConfig *config.BotConfig) {
-	bot := twitchbot.NewChatBot(&botConfig.Twitch)
+	bot := twitchbot.NewChatBot(&botConfig.Twitch, &botConfig.Gsi)
 	for _, channelConfig := range botConfig.Channels {
 		bot.Join(&channelConfig)
 	}

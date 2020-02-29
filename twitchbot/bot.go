@@ -4,6 +4,7 @@ import (
 	"github.com/gempir/go-twitch-irc"
 
 	"prestrafe-bot/config"
+	"prestrafe-bot/gsi"
 )
 
 // This interface defines the public API of the chat bot. The API is pretty slim, as most of the work is done
@@ -19,20 +20,24 @@ type ChatBot interface {
 }
 
 type chatBot struct {
-	channels map[string]botChannel
-	client   *twitch.Client
+	gsiConfig *config.GsiConfig
+	channels  map[string]botChannel
+	client    *twitch.Client
 }
 
 // Creates a new chat bot instance.
-func NewChatBot(config *config.TwitchConfig) ChatBot {
+func NewChatBot(twitchConfig *config.TwitchConfig, gsiConfig *config.GsiConfig) ChatBot {
 	return &chatBot{
-		channels: make(map[string]botChannel),
-		client:   twitch.NewClient(config.UserName, config.AccessToken),
+		gsiConfig,
+		make(map[string]botChannel),
+		twitch.NewClient(twitchConfig.UserName, twitchConfig.AccessToken),
 	}
 }
 
 func (c chatBot) Join(config *config.ChannelConfig) ChatBot {
-	channel := newChannel(c.client, config)
+	gsiClient := gsi.NewClient("localhost", c.gsiConfig.Port, config.GsiToken)
+
+	channel := newChannel(c.client, gsiClient, config)
 
 	c.client.Join(channel.name)
 	c.channels[channel.name] = *channel

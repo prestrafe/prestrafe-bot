@@ -15,10 +15,7 @@ type botChannel struct {
 	channelSink ChatMessageSink
 }
 
-func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel {
-	// TODO Wire actual GSI config here
-	gsiClient := gsi.NewClient("localhost", 8337, config.GsiToken)
-
+func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.ChannelConfig) *botChannel {
 	commands := []ChatCommand{
 		NewWRCommand(gsiClient).
 			WithConfig(config.GetCommandConfig("*")).
