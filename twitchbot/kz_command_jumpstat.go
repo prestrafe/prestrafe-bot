@@ -18,7 +18,7 @@ func NewJumpStatCommand(gsiClient gsi.Client, name, jumpType, jumpName string) C
 			}
 
 			jumpStat, apiError := globalapi.GetJumpStatPersonalBest(jumpType, gameState.Player.SteamId)
-			if jumpStat != nil && apiError != nil {
+			if jumpStat != nil && apiError == nil {
 				binds := "no binds"
 				if jumpStat.HasBinds() {
 					binds = "with binds"
