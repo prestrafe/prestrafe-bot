@@ -1,14 +1,16 @@
 package gsi
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
 
 	"prestrafe-bot/config"
 )
@@ -27,6 +29,7 @@ type server struct {
 	ttl         time.Duration
 	gameStates  map[string]*GameState
 	lastUpdates map[string]time.Time
+	httpServer  *http.Server
 }
 
 // Creates a new GSI server.
@@ -36,18 +39,30 @@ func NewServer(config *config.GsiConfig) Server {
 		time.Duration(config.TTL) * time.Second,
 		make(map[string]*GameState),
 		make(map[string]time.Time),
+		nil,
 	}
 }
 
 func (server *server) Start() error {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/update", server.handleGsiUpdate)
-	mux.HandleFunc("/get", server.handleGsiGet)
-	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+	router := mux.NewRouter()
+	router.Path("/update").Methods("POST").HandlerFunc(server.handleGsiUpdate)
+	router.Path("/get").Methods("GET").HandlerFunc(server.handleGsiGet)
+	router.PathPrefix("/").HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
 	})
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", server.port), mux)
+	server.httpServer = &http.Server{
+		Addr:         "0.0.0.0",
+		Handler:      router,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+	}
+
+	return server.httpServer.ListenAndServe()
+}
+
+func (server *server) Stop() error {
+	return server.httpServer.Shutdown(context.Background())
 }
 
 func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
