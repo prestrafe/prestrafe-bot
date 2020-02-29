@@ -20,12 +20,12 @@ func createWRHandler(gsiClient gsi.Client) ChatCommandHandler {
 		mapName, hasMapName := ctx.Parameter("map")
 
 		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil {
+		if gsiError != nil || !gameState.IsKZGameState() {
 			return "", errors.New("could not retrieve KZ game play")
 		}
 
 		if !hasMapName {
-			mapName = gameState.Map.Name
+			mapName = gameState.Map.GetMapName()
 		}
 
 		nub, pro, apiError := globalapi.GetWorldRecord(mapName, gameState.Player.TimerMode(), 0)
