@@ -25,20 +25,16 @@ type Server interface {
 }
 
 type server struct {
-	port        int
-	ttl         time.Duration
-	gameStates  map[string]*GameState
-	lastUpdates map[string]time.Time
-	httpServer  *http.Server
+	port       int
+	store      Store
+	httpServer *http.Server
 }
 
 // Creates a new GSI server.
 func NewServer(config *config.GsiConfig) Server {
 	return &server{
 		config.Port,
-		time.Duration(config.TTL) * time.Second,
-		make(map[string]*GameState),
-		make(map[string]time.Time),
+		NewStore(time.Duration(config.TTL) * time.Second),
 		nil,
 	}
 }
@@ -71,14 +67,7 @@ func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 	}
 
 	authToken := request.Header.Get("Authorization")[4:]
-
-	if lastUpdate, hasLastUpdate := server.lastUpdates[authToken]; hasLastUpdate {
-		if lastUpdate.Before(time.Now().Add(-server.ttl)) {
-			delete(server.gameStates, authToken)
-		}
-	}
-
-	gameState, hasGameState := server.gameStates[authToken]
+	gameState, hasGameState := server.store.Get(authToken)
 	if !hasGameState {
 		writer.WriteHeader(http.StatusNotFound)
 		return
@@ -117,12 +106,9 @@ func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 
 	if isValidGameState(gameState) {
 		gameState.Map.Name = cleanupMapName(gameState.Map.Name)
-
-		server.gameStates[authToken] = gameState
-		server.lastUpdates[authToken] = time.Now()
+		server.store.Put(authToken, gameState)
 	} else {
-		delete(server.gameStates, authToken)
-		delete(server.lastUpdates, authToken)
+		server.store.Remove(authToken)
 	}
 
 	writer.WriteHeader(http.StatusOK)
