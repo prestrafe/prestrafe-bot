@@ -45,8 +45,8 @@ func NewServer(config *config.GsiConfig) Server {
 
 func (server *server) Start() error {
 	router := mux.NewRouter()
-	router.Path("/update").Methods("POST").HandlerFunc(server.handleGsiUpdate)
-	router.Path("/get").Methods("GET").HandlerFunc(server.handleGsiGet)
+	router.Path("/gsi").Methods("GET").HandlerFunc(server.handleGsiGet)
+	router.Path("/gsi").Methods("POST").HandlerFunc(server.handleGsiUpdate)
 	router.PathPrefix("/").HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
 	})
@@ -65,58 +65,9 @@ func (server *server) Stop() error {
 	return server.httpServer.Shutdown(context.Background())
 }
 
-func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
-	if request.Method != "POST" {
-		writer.WriteHeader(http.StatusMethodNotAllowed)
-		log.Printf("GSI-UPDATE: Method not allowed from %s\n", request.Host)
-		return
-	}
-	if request.Body == nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI-UPDATE: No body from %s\n", request.Host)
-		return
-	}
-
-	body, ioError := ioutil.ReadAll(request.Body)
-	if ioError != nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI-UPDATE: Empty body from %s\n", request.Host)
-		return
-	}
-
-	gameState := new(GameState)
-	if jsonError := json.Unmarshal(body, gameState); jsonError != nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI-UPDATE: Bad body from %s\n", request.Host)
-		return
-	}
-
-	authToken := gameState.Auth.Token
-	gameState.Auth = nil
-
-	if isValidGameState(gameState) {
-		gameState.Map.Name = cleanupMapName(gameState.Map.Name)
-
-		server.gameStates[authToken] = gameState
-		server.lastUpdates[authToken] = time.Now()
-	} else {
-		delete(server.gameStates, authToken)
-		delete(server.lastUpdates, authToken)
-	}
-
-	writer.WriteHeader(http.StatusOK)
-}
-
 func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
-	if request.Method != "GET" {
-		writer.WriteHeader(http.StatusMethodNotAllowed)
-		log.Printf("GSI-GET: Method not allowed from %s\n", request.Host)
-		return
-	}
-
 	if !strings.HasPrefix(request.Header.Get("Authorization"), "GSI ") {
 		writer.WriteHeader(http.StatusUnauthorized)
-		log.Printf("GSI-GET: No GSI token provided %s\n", request.Host)
 	}
 
 	authToken := request.Header.Get("Authorization")[4:]
@@ -136,7 +87,6 @@ func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 	response, err := json.Marshal(gameState)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		log.Printf("GSI-GET: Could not serialize game state %s\n", request.Host)
 		return
 	}
 
@@ -145,9 +95,37 @@ func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 
 	if _, err = writer.Write(response); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		log.Printf("GSI-GET: Could not write game state %s\n", request.Host)
 		return
 	}
+}
+
+func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
+	body, ioError := ioutil.ReadAll(request.Body)
+	if ioError != nil || body == nil || len(body) <= 0 {
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	gameState := new(GameState)
+	if jsonError := json.Unmarshal(body, gameState); jsonError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	authToken := gameState.Auth.Token
+	gameState.Auth = nil
+
+	if isValidGameState(gameState) {
+		gameState.Map.Name = cleanupMapName(gameState.Map.Name)
+
+		server.gameStates[authToken] = gameState
+		server.lastUpdates[authToken] = time.Now()
+	} else {
+		delete(server.gameStates, authToken)
+		delete(server.lastUpdates, authToken)
+	}
+
+	writer.WriteHeader(http.StatusOK)
 }
 
 func isValidGameState(gameState *GameState) bool {
