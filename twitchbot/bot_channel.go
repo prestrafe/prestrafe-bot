@@ -6,26 +6,32 @@ import (
 	"github.com/gempir/go-twitch-irc"
 
 	"prestrafe-bot/config"
+	"prestrafe-bot/gsi"
 )
 
 type botChannel struct {
 	name        string
-	gsiToken    string
 	commands    []ChatCommand
 	channelSink ChatMessageSink
 }
 
 func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel {
+	// TODO Wire actual GSI config here
+	gsiClient := gsi.NewClient("localhost", 8337, config.GsiToken)
+
 	commands := []ChatCommand{
-		CreateWrCommandBuilder().
+		NewWRCommand(gsiClient).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("wr")).
+			Build(),
+		NewPBCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("pb")).
 			Build(),
 	}
 
 	return &botChannel{
 		config.Name,
-		config.GsiToken,
 		commands,
 		func(format string, a ...interface{}) {
 			client.Say(config.Name, fmt.Sprintf(format, a...))
@@ -35,7 +41,7 @@ func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel
 
 func (c *botChannel) handle(user *twitch.User, message *twitch.Message) {
 	for _, command := range c.commands {
-		if command.TryHandle(user, message, c.gsiToken, c.channelSink) {
+		if command.TryHandle(user, message, c.channelSink) {
 			return
 		}
 	}
