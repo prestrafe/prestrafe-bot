@@ -2,36 +2,44 @@ package gsi
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	"prestrafe-bot/config"
 )
 
-type Server struct {
-	verificationToken string
-	ttl               time.Duration
-	port              int
-
-	gameState  *GameState
-	lastUpdate time.Time
+// Defines the public API for the Game State Integration server. The server acts as a rely between the CSGO GSI API,
+// which sends game state data to a configured web-hook and potential clients, which may wish to consume this data as a
+// service, without providing their own HTTP server. The GSI server supports multiple tenants, which are identified by
+// their authentication token, that is send with each GSI web-hook call.
+type Server interface {
+	// Starts the server in the current thread and blocks until an error occurs.
+	Start() error
 }
 
-func CreateServer(verificationToken string, ttl time.Duration) *Server {
-	checkTTL := ttl
-	if ttl == 0 {
-		checkTTL = time.Duration(999)
-	}
+type server struct {
+	port        int
+	ttl         time.Duration
+	gameStates  map[string]*GameState
+	lastUpdates map[string]time.Time
+}
 
-	return &Server{
-		verificationToken: verificationToken,
-		ttl:               checkTTL,
+// Creates a new GSI server.
+func NewServer(config *config.GsiConfig) Server {
+	return &server{
+		config.Port,
+		time.Duration(config.TTL) * time.Second,
+		make(map[string]*GameState),
+		make(map[string]time.Time),
 	}
 }
 
-func (server *Server) ListenAndServer() error {
+func (server *server) Start() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/update", server.handleGsiUpdate)
 	mux.HandleFunc("/get", server.handleGsiGet)
@@ -39,10 +47,10 @@ func (server *Server) ListenAndServer() error {
 		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
 	})
 
-	return http.ListenAndServe(":8337", mux)
+	return http.ListenAndServe(fmt.Sprintf(":%d", server.port), mux)
 }
 
-func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
+func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
 		log.Printf("GSI-UPDATE: Method not allowed from %s\n", request.Host)
@@ -68,42 +76,49 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	if gameState.Auth.Token != server.verificationToken {
-		writer.WriteHeader(http.StatusForbidden)
-		log.Printf("GSI-UPDATE: Invalid toke from %s\n", request.Host)
-		return
-	}
+	authToken := gameState.Auth.Token
+	gameState.Auth = nil
 
 	if isValidGameState(gameState) {
-		server.gameState = gameState
-		server.gameState.Auth = nil
+		gameState.Map.Name = cleanupMapName(gameState.Map.Name)
 
-		server.gameState.Map.Name = cleanupMapName(server.gameState.Map.Name)
+		server.gameStates[authToken] = gameState
+		server.lastUpdates[authToken] = time.Now()
 	} else {
-		server.gameState = nil
+		delete(server.gameStates, authToken)
+		delete(server.lastUpdates, authToken)
 	}
 
-	server.lastUpdate = time.Now()
 	writer.WriteHeader(http.StatusOK)
 }
 
-func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
+func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
 		log.Printf("GSI-GET: Method not allowed from %s\n", request.Host)
 		return
 	}
 
-	if server.lastUpdate.Before(time.Now().Add(-server.ttl)) {
-		server.gameState = nil
+	if !strings.HasPrefix(request.Header.Get("Authorization"), "GSI ") {
+		writer.WriteHeader(http.StatusUnauthorized)
+		log.Printf("GSI-GET: No GSI token provided %s\n", request.Host)
 	}
 
-	if server.gameState == nil {
+	authToken := request.Header.Get("Authorization")[4:]
+
+	if lastUpdate, hasLastUpdate := server.lastUpdates[authToken]; hasLastUpdate {
+		if lastUpdate.Before(time.Now().Add(-server.ttl)) {
+			delete(server.gameStates, authToken)
+		}
+	}
+
+	gameState, hasGameState := server.gameStates[authToken]
+	if !hasGameState {
 		writer.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	response, err := json.Marshal(server.gameState)
+	response, err := json.Marshal(gameState)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		log.Printf("GSI-GET: Could not serialize game state %s\n", request.Host)
