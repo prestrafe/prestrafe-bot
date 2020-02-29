@@ -2,6 +2,7 @@ package gsi
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,19 +16,14 @@ type Server struct {
 	ttl               time.Duration
 	port              int
 
-	gameState  *GameState
-	lastUpdate time.Time
+	gameStates  map[string]*GameState
+	lastUpdates map[string]time.Time
 }
 
 func CreateServer(verificationToken string, ttl time.Duration) *Server {
-	checkTTL := ttl
-	if ttl == 0 {
-		checkTTL = time.Duration(999)
-	}
-
 	return &Server{
 		verificationToken: verificationToken,
-		ttl:               checkTTL,
+		ttl:               ttl,
 	}
 }
 
@@ -39,7 +35,7 @@ func (server *Server) ListenAndServer() error {
 		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
 	})
 
-	return http.ListenAndServe(":8337", mux)
+	return http.ListenAndServe(fmt.Sprintf(":%d", server.port), mux)
 }
 
 func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
@@ -74,16 +70,19 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	if isValidGameState(gameState) {
-		server.gameState = gameState
-		server.gameState.Auth = nil
+	authToken := gameState.Auth.Token
+	gameState.Auth = nil
 
-		server.gameState.Map.Name = cleanupMapName(server.gameState.Map.Name)
+	if isValidGameState(gameState) {
+		gameState.Map.Name = cleanupMapName(gameState.Map.Name)
+
+		server.gameStates[authToken] = gameState
+		server.lastUpdates[authToken] = time.Now()
 	} else {
-		server.gameState = nil
+		delete(server.gameStates, authToken)
+		delete(server.lastUpdates, authToken)
 	}
 
-	server.lastUpdate = time.Now()
 	writer.WriteHeader(http.StatusOK)
 }
 
@@ -94,16 +93,26 @@ func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
-	if server.lastUpdate.Before(time.Now().Add(-server.ttl)) {
-		server.gameState = nil
+	if !strings.HasPrefix(request.Header.Get("Authorization"), "GSI ") {
+		writer.WriteHeader(http.StatusUnauthorized)
+		log.Printf("GSI-GET: No GSI token provided %s\n", request.Host)
 	}
 
-	if server.gameState == nil {
+	authToken := request.Header.Get("Authorization")[5:]
+
+	if lastUpdate, hasLastUpdate := server.lastUpdates[authToken]; hasLastUpdate {
+		if lastUpdate.Before(time.Now().Add(-server.ttl)) {
+			delete(server.gameStates, authToken)
+		}
+	}
+
+	gameState, hasGameState := server.gameStates[authToken]
+	if !hasGameState {
 		writer.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	response, err := json.Marshal(server.gameState)
+	response, err := json.Marshal(gameState)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		log.Printf("GSI-GET: Could not serialize game state %s\n", request.Host)
