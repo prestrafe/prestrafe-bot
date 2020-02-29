@@ -17,6 +17,23 @@ type botChannel struct {
 
 func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.ChannelConfig) *botChannel {
 	commands := []ChatCommand{
+		// Troll commands
+		NewGlobalCheckCommand().
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("globalcheck")).
+			Build(),
+
+		// Map information commands
+		NewMapCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("map")).
+			Build(),
+		NewTierCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("tier")).
+			Build(),
+
+		// Record time commands
 		NewWRCommand(gsiClient).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("wr")).
@@ -33,27 +50,13 @@ func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.Chan
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("pb")).
 			Build(),
-		NewGlobalCheckCommand().
-			WithConfig(config.GetCommandConfig("*")).
-			WithConfig(config.GetCommandConfig("globalcheck")).
-			Build(),
-		NewMapCommand(gsiClient).
-			WithConfig(config.GetCommandConfig("*")).
-			WithConfig(config.GetCommandConfig("map")).
-			Build(),
-		NewTierCommand(gsiClient).
-			WithConfig(config.GetCommandConfig("*")).
-			WithConfig(config.GetCommandConfig("tier")).
-			Build(),
+
+		// Jump Stat commands
 		NewJumpStatCommand(gsiClient, "bh", "bhop", "Bunnyhop").
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),
-		NewJumpStatCommand(gsiClient, "bh", "drophop", "Drop Bunnyhop").
-			WithConfig(config.GetCommandConfig("*")).
-			WithConfig(config.GetCommandConfig("jumpstat")).
-			Build(),
-		NewJumpStatCommand(gsiClient, "laj", "ladderjump", "Ladder Jump").
+		NewJumpStatCommand(gsiClient, "dh", "drophop", "Drop Bunnyhop").
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),

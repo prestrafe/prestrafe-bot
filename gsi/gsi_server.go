@@ -23,9 +23,8 @@ type Server interface {
 }
 
 type server struct {
-	port int
-	ttl  time.Duration
-
+	port        int
+	ttl         time.Duration
 	gameStates  map[string]*GameState
 	lastUpdates map[string]time.Time
 }
@@ -33,8 +32,10 @@ type server struct {
 // Creates a new GSI server.
 func NewServer(config *config.GsiConfig) Server {
 	return &server{
-		port: config.Port,
-		ttl:  time.Duration(config.TTL) * time.Second,
+		config.Port,
+		time.Duration(config.TTL) * time.Second,
+		make(map[string]*GameState),
+		make(map[string]time.Time),
 	}
 }
 
