@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 
@@ -62,6 +61,9 @@ func (server *server) Start() error {
 	server.upgrader = &websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
+		CheckOrigin: func(request *http.Request) bool {
+			return true
+		},
 	}
 
 	return server.httpServer.ListenAndServe()
@@ -115,8 +117,7 @@ func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 	authToken := gameState.Auth.Token
 	gameState.Auth = nil
 
-	if isValidGameState(gameState) {
-		gameState.Map.Name = cleanupMapName(gameState.Map.Name)
+	if gameState.Player != nil {
 		server.store.Put(authToken, gameState)
 	} else {
 		server.store.Remove(authToken)
@@ -133,7 +134,6 @@ func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *ht
 
 	conn, err := server.upgrader.Upgrade(writer, request, nil)
 	if err != nil {
-		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -149,21 +149,4 @@ func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *ht
 			}
 		}
 	}
-}
-
-func isValidGameState(gameState *GameState) bool {
-	if gameState.Player == nil || gameState.Map == nil {
-		return false
-	}
-
-	matchString, err := regexp.MatchString("^(workshop/[0-9]+/)?(kz|kzpro|skz|vnl|xc)_.+$", gameState.Map.Name)
-	return matchString && err == nil
-}
-
-func cleanupMapName(mapName string) string {
-	if strings.HasPrefix(mapName, "workshop") {
-		return mapName[strings.LastIndex(mapName, "/")+1:]
-	}
-
-	return mapName
 }

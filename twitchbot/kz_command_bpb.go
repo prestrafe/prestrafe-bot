@@ -23,7 +23,7 @@ func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 		mapName, hasMapName := ctx.Parameter("map")
 
 		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil {
+		if gsiError != nil || !gameState.IsKZGameState() {
 			return "", errors.New("could not retrieve KZ game play")
 		}
 
@@ -31,7 +31,7 @@ func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 			bonus = "1"
 		}
 		if !hasMapName {
-			mapName = gameState.Map.Name
+			mapName = gameState.Map.GetMapName()
 		}
 
 		bonusNumber, _ := strconv.Atoi(bonus)

@@ -13,7 +13,7 @@ func NewJumpStatCommand(gsiClient gsi.Client, name, jumpType, jumpName string) C
 		WithAlias(fmt.Sprintf("%spb", name), jumpType).
 		WithHandler(func(ctx CommandContext) (message string, err error) {
 			gameState, gsiError := gsiClient.GetGameState()
-			if gsiError != nil {
+			if gsiError != nil || !gameState.IsKZGameState() {
 				return "", errors.New("could not retrieve KZ game play")
 			}
 

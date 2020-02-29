@@ -1,6 +1,7 @@
 package gsi
 
 import (
+	"reflect"
 	"time"
 
 	"github.com/patrickmn/go-cache"
@@ -31,7 +32,7 @@ func NewStore(ttl time.Duration) Store {
 	store := &store{channels, internalCache}
 
 	internalCache.OnEvicted(func(authToken string, item interface{}) {
-		channels[authToken] <- nil
+		channels[authToken] <- new(GameState)
 	})
 
 	return store
@@ -50,13 +51,17 @@ func (s *store) Get(authToken string) (gameState *GameState, present bool) {
 }
 
 func (s *store) Put(authToken string, gameState *GameState) {
-	if _, present := s.internalCache.Get(authToken); !present {
+	if _, present := s.channels[authToken]; !present {
 		// TODO These channels need to be cleaned up after awhile or do they?
 		s.channels[authToken] = make(chan *GameState)
 	}
 
+	previousGameState, _ := s.internalCache.Get(authToken)
 	s.internalCache.Set(authToken, gameState, cache.DefaultExpiration)
-	s.channels[authToken] <- gameState
+
+	if !reflect.DeepEqual(previousGameState, gameState) {
+		s.channels[authToken] <- gameState
+	}
 }
 
 func (s *store) Remove(authToken string) {
