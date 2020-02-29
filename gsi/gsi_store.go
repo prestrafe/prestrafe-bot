@@ -26,16 +26,18 @@ type store struct {
 
 // Creates a new GSI store, with a given TTL. The TTL is the duration for game states, before they are considered stale.
 func NewStore(ttl time.Duration) Store {
-	return &store{make(map[string]chan *GameState), cache.New(ttl, ttl*10)}
+	internalCache := cache.New(ttl, ttl*10)
+	channels := make(map[string]chan *GameState)
+	store := &store{channels, internalCache}
+
+	internalCache.OnEvicted(func(authToken string, item interface{}) {
+		channels[authToken] <- nil
+	})
+
+	return store
 }
 
 func (s *store) Channel(authToken string) chan *GameState {
-	// TODO These channels need to be cleaned up after awhile or do they?
-	if channel, present := s.channels[authToken]; present {
-		return channel
-	}
-
-	s.channels[authToken] = make(chan *GameState)
 	return s.channels[authToken]
 }
 
@@ -47,7 +49,13 @@ func (s *store) Get(authToken string) (gameState *GameState, present bool) {
 }
 
 func (s *store) Put(authToken string, gameState *GameState) {
+	if _, present := s.internalCache.Get(authToken); !present {
+		// TODO These channels need to be cleaned up after awhile or do they?
+		s.channels[authToken] = make(chan *GameState)
+	}
+
 	s.internalCache.Set(authToken, gameState, cache.DefaultExpiration)
+	s.channels[authToken] <- gameState
 }
 
 func (s *store) Remove(authToken string) {
