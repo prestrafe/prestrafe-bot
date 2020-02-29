@@ -24,6 +24,10 @@ type ChatMessageSink func(format string, a ...interface{})
 // Defines an interface that exposes the external API of a chat command. A chat command encapsulates a lot of common
 // logic for all command handlers and takes care of permissions, cool downs, error handling and message parsing.
 type ChatCommand interface {
+	// Returns true if the command is enabled, false otherwise.
+	Enabled() bool
+	// Returns true if the command is only available to subscribers, false otherwise.
+	SubOnly() bool
 	// Tries to handle a chat message from a chat user. If the command is able to identify that the message is handled
 	// by it, this method returns true, regardless if the command later produces an error. It returns false only if the
 	// command does not claim responsibility for the message.
@@ -42,6 +46,14 @@ type chatCommand struct {
 	handler       ChatCommandHandler
 	pattern       *regexp.Regexp
 	lastExecution time.Time
+}
+
+func (c *chatCommand) Enabled() bool {
+	return c.enabled
+}
+
+func (c *chatCommand) SubOnly() bool {
+	return c.subOnly
 }
 
 func (c *chatCommand) TryHandle(user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool {

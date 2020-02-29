@@ -78,6 +78,12 @@ func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel
 			Build(),
 	}
 
+	commands = append(commands, NewHelpCommand(commands).
+		WithConfig(config.GetCommandConfig("*")).
+		WithConfig(config.GetCommandConfig("help")).
+		Build(),
+	)
+
 	return &botChannel{
 		config.Name,
 		commands,
