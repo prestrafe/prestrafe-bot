@@ -59,17 +59,8 @@ func TestCommandBuilder(t *testing.T) {
 }
 
 func TestCommandBuilderWithConfig(t *testing.T) {
-	enabled := false
-	subOnly := true
-	coolDown := 10
-
 	command := NewChatCommandBuilder("name").
-		WithConfig(&config.ChatCommandConfig{
-			Name:     "",
-			Enabled:  &enabled,
-			SubOnly:  &subOnly,
-			CoolDown: &coolDown,
-		}).
+		WithConfig(testCommandConfig(false, true, 10)).
 		build()
 
 	if assert.NotNil(t, command) {
@@ -77,6 +68,20 @@ func TestCommandBuilderWithConfig(t *testing.T) {
 		assert.False(t, command.enabled)
 		assert.True(t, command.subOnly)
 		assert.Equal(t, 10*time.Second, command.coolDown)
+	}
+}
+
+func TestCommandBuilderWithConfigOverwrite(t *testing.T) {
+	command := NewChatCommandBuilder("name").
+		WithConfig(testCommandConfig(false, true, 10)).
+		WithConfig(testCommandConfig(false, false, 20)).
+		build()
+
+	if assert.NotNil(t, command) {
+		assert.Equal(t, "name", command.name)
+		assert.False(t, command.enabled)
+		assert.False(t, command.subOnly)
+		assert.Equal(t, 20*time.Second, command.coolDown)
 	}
 }
 
@@ -171,4 +176,13 @@ func TestTryHandle(t *testing.T) {
 
 	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name"}, abyss))
 	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, abyss))
+}
+
+func testCommandConfig(enabled bool, subOnly bool, coolDown int) *config.ChatCommandConfig {
+	return &config.ChatCommandConfig{
+		Name:     "",
+		Enabled:  &enabled,
+		SubOnly:  &subOnly,
+		CoolDown: &coolDown,
+	}
 }
