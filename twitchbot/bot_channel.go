@@ -24,9 +24,57 @@ func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("wr")).
 			Build(),
+		NewBWRCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("wr")).
+			Build(),
 		NewPBCommand(gsiClient).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("pb")).
+			Build(),
+		NewBPBCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("pb")).
+			Build(),
+		NewGlobalCheckCommand().
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("globalcheck")).
+			Build(),
+		NewMapCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("map")).
+			Build(),
+		NewTierCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("tier")).
+			Build(),
+		NewJumpStatCommand(gsiClient, "bh", "bhop", "Bunnyhop").
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("jumpstat")).
+			Build(),
+		NewJumpStatCommand(gsiClient, "bh", "drophop", "Drop Bunnyhop").
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("jumpstat")).
+			Build(),
+		NewJumpStatCommand(gsiClient, "laj", "ladderjump", "Ladder Jump").
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("jumpstat")).
+			Build(),
+		NewJumpStatCommand(gsiClient, "laj", "ladderjump", "Ladder Jump").
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("jumpstat")).
+			Build(),
+		NewJumpStatCommand(gsiClient, "lj", "longjump", "Long Jump").
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("jumpstat")).
+			Build(),
+		NewJumpStatCommand(gsiClient, "mbh", "multibhop", "Multi Bunnyhop").
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("jumpstat")).
+			Build(),
+		NewJumpStatCommand(gsiClient, "wj", "weirdjump", "Weird Jump").
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),
 	}
 

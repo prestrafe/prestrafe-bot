@@ -12,10 +12,10 @@ func NewPBCommand(gsiClient gsi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("pb").
 		WithAlias("pr").
 		WithParameter("map", false, "[A-Za-z0-9_]").
-		WithHandler(createPbHandler(gsiClient))
+		WithHandler(createPBHandler(gsiClient))
 }
 
-func createPbHandler(gsiClient gsi.Client) ChatCommandHandler {
+func createPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
 
