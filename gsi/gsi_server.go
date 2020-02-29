@@ -144,7 +144,6 @@ func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *ht
 		select {
 		case gameState := <-channel:
 			if err := conn.WriteJSON(gameState); err != nil {
-				writer.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 		}
