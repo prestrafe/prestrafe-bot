@@ -104,7 +104,7 @@ func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 		log.Printf("GSI-GET: No GSI token provided %s\n", request.Host)
 	}
 
-	authToken := request.Header.Get("Authorization")[5:]
+	authToken := request.Header.Get("Authorization")[4:]
 
 	if lastUpdate, hasLastUpdate := server.lastUpdates[authToken]; hasLastUpdate {
 		if lastUpdate.Before(time.Now().Add(-server.ttl)) {
