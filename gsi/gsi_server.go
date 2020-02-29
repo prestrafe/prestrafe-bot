@@ -135,6 +135,7 @@ func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *ht
 
 	conn, err := server.upgrader.Upgrade(writer, request, nil)
 	if err != nil {
+		_ = conn.Close()
 		return
 	}
 
@@ -144,6 +145,7 @@ func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *ht
 		select {
 		case gameState := <-channel:
 			if err := conn.WriteJSON(gameState); err != nil {
+				_ = conn.Close()
 				return
 			}
 		}
