@@ -31,7 +31,7 @@ func TestCommandBuilder(t *testing.T) {
 		WithEnabled(false).
 		WithSubOnly(true).
 		WithCoolDown(10 * time.Second).
-		WithHandler(func(parameters map[string]string) (msg string, err error) {
+		WithHandler(func(ctx CommandContext) (msg string, err error) {
 			return "", nil
 		}).
 		build()
@@ -86,7 +86,7 @@ func TestMatchesPrefix(t *testing.T) {
 		WithParameter("param", false, ".*").
 		WithSubOnly(true).
 		WithCoolDown(10 * time.Second).
-		WithHandler(func(parameters map[string]string) (msg string, err error) {
+		WithHandler(func(ctx CommandContext) (msg string, err error) {
 			return "", nil
 		}).
 		build()
@@ -153,22 +153,22 @@ func TestTryHandle(t *testing.T) {
 	normalUser := &twitch.User{Badges: map[string]int{}}
 	abyss := func(format string, a ...interface{}) {}
 
-	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: ""}, abyss))
-	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other"}, abyss))
-	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other 42"}, abyss))
+	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: ""}, "", abyss))
+	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other"}, "", abyss))
+	assert.False(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other 42"}, "", abyss))
 
-	assert.True(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name"}, abyss))
-	assert.True(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, abyss))
+	assert.True(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name"}, "", abyss))
+	assert.True(t, enabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, "", abyss))
 
 	disabledCommand := NewChatCommandBuilder("name").
 		WithParameter("param", true, "[0-9]+").
 		WithEnabled(false).
 		build()
 
-	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: ""}, abyss))
-	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other"}, abyss))
-	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other 42"}, abyss))
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: ""}, "", abyss))
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other"}, "", abyss))
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!other 42"}, "", abyss))
 
-	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name"}, abyss))
-	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, abyss))
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name"}, "", abyss))
+	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, "", abyss))
 }

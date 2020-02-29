@@ -3,9 +3,9 @@ package config
 // This config element configures properties of a twitch channel that is observed by the chat bot. It focuses on
 // settings that may very between different streamers and channels.
 type ChannelConfig struct {
-	Name              string              `yaml:"name"`
-	VerificationToken string              `yaml:"verificationToken"`
-	Commands          []ChatCommandConfig `yaml:"commands"`
+	Name     string              `yaml:"name"`
+	GsiToken string              `yaml:"gsiToken"`
+	Commands []ChatCommandConfig `yaml:"commands"`
 }
 
 // A helper method that fetches a command configuration from a channel configuration with a given name. If no such
