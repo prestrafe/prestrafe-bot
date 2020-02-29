@@ -15,7 +15,7 @@ const commandPrefix = "!"
 // They get passed a the parameters that were passed to the command by the author.
 // Handlers can respond with either a message or an error. Both will get printed to chat, but an error does not cause
 // the command to be cooled down as much.
-type ChatCommandHandler func(parameters map[string]string) (msg string, err error)
+type ChatCommandHandler func(ctx CommandContext) (msg string, err error)
 
 // Defines a function signature that can be called to send chat messages to an unknown source. This way an abstraction
 // is provided between the command handling and the actual receiver of command results.
@@ -27,7 +27,7 @@ type ChatCommand interface {
 	// Tries to handle a chat message from a chat user. If the command is able to identify that the message is handled
 	// by it, this method returns true, regardless if the command later produces an error. It returns false only if the
 	// command does not claim responsibility for the message.
-	TryHandle(user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool
+	TryHandle(user *twitch.User, message *twitch.Message, gsiToken string, messageSink ChatMessageSink) bool
 	// Returns a string representation of the command. This is usually the signature of the command.
 	String() string
 }
@@ -44,7 +44,7 @@ type chatCommand struct {
 	lastExecution time.Time
 }
 
-func (c *chatCommand) TryHandle(user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool {
+func (c *chatCommand) TryHandle(user *twitch.User, message *twitch.Message, gsiToken string, messageSink ChatMessageSink) bool {
 	if !c.enabled {
 		return false
 	}
@@ -68,7 +68,7 @@ func (c *chatCommand) TryHandle(user *twitch.User, message *twitch.Message, mess
 		return true
 	}
 
-	output, err := c.handler(c.parseParameters(message.Text))
+	output, err := c.handler(&commandContext{gsiToken, c.parseParameters(message.Text)})
 	if err != nil {
 		messageSink(err.Error())
 	} else {

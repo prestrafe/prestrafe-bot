@@ -9,10 +9,10 @@ import (
 )
 
 type botChannel struct {
-	name              string
-	verificationToken string
-	commands          []ChatCommand
-	channelSink       ChatMessageSink
+	name        string
+	gsiToken    string
+	commands    []ChatCommand
+	channelSink ChatMessageSink
 }
 
 func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel {
@@ -24,10 +24,10 @@ func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel
 	}
 
 	return &botChannel{
-		name:              config.Name,
-		verificationToken: config.VerificationToken,
-		commands:          commands,
-		channelSink: func(format string, a ...interface{}) {
+		config.Name,
+		config.GsiToken,
+		commands,
+		func(format string, a ...interface{}) {
 			client.Say(config.Name, fmt.Sprintf(format, a...))
 		},
 	}
@@ -35,7 +35,7 @@ func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel
 
 func (c *botChannel) handle(user *twitch.User, message *twitch.Message) {
 	for _, command := range c.commands {
-		if command.TryHandle(user, message, c.channelSink) {
+		if command.TryHandle(user, message, c.gsiToken, c.channelSink) {
 			return
 		}
 	}

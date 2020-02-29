@@ -50,15 +50,17 @@ type ChatCommandBuilder interface {
 // required.
 func NewChatCommandBuilder(name string) ChatCommandBuilder {
 	return &chatCommand{
-		name:       name,
-		aliases:    []string{},
-		parameters: []chatCommandParameter{},
-		enabled:    true,
-		subOnly:    false,
-		coolDown:   15 * time.Second,
-		handler: func(parameters map[string]string) (msg string, err error) {
+		name,
+		[]string{},
+		[]chatCommandParameter{},
+		true,
+		false,
+		15 * time.Second,
+		func(ctx CommandContext) (msg string, err error) {
 			return "", errors.New("this command is not yet implemented")
 		},
+		nil,
+		time.Unix(0, 0),
 	}
 }
 
