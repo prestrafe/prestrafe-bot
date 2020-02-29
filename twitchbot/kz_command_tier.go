@@ -32,7 +32,26 @@ func createTierHandler(gsiClient gsi.Client) ChatCommandHandler {
 		if apiError != nil {
 			return fmt.Sprintf("%s - Tier Unknown (Not global)", mapName), nil
 		} else {
-			return fmt.Sprintf("%s - Tier %d", mapName, globalMap.Difficulty), nil
+			return fmt.Sprintf("%s - Tier %d (%s)", mapName, globalMap.Difficulty, convertDifficultyToTier(globalMap.Difficulty)), nil
 		}
 	}
+}
+
+func convertDifficultyToTier(difficulty int) string {
+	switch difficulty {
+	case 1:
+		return "Very Easy"
+	case 2:
+		return "Easy"
+	case 3:
+		return "Medium"
+	case 4:
+		return "Hard"
+	case 5:
+		return "Very Hard"
+	case 6:
+		return "Death"
+	}
+
+	return "Unknown"
 }
