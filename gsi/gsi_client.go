@@ -9,10 +9,32 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-func GetGameState() (*GameState, error) {
+// This interfaces defines the public API of the GSI client. The client can be used to retrieve information about the
+// current game state of a player, by connecting to a running GSI server. It handles authentication automatically.
+type Client interface {
+	// Retrieves the game state for the player that this client connects to.
+	GetGameState() (*GameState, error)
+}
+
+type client struct {
+	Host      string
+	Port      int
+	AuthToken string
+}
+
+func NewClient(host string, port int, authToken string) Client {
+	return &client{
+		Host:      host,
+		Port:      port,
+		AuthToken: authToken,
+	}
+}
+
+func (c *client) GetGameState() (*GameState, error) {
 	response, restErr := resty.New().
 		R().
-		Get("http://localhost:8337/get")
+		SetHeader("Authorization", fmt.Sprintf("GSI %s", c.AuthToken)).
+		Get(fmt.Sprintf("http://%s:%d/get", c.Host, c.Port))
 	if restErr != nil {
 		log.Println(restErr)
 		return nil, restErr
