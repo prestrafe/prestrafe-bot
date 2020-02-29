@@ -19,14 +19,14 @@ type ChatBot interface {
 }
 
 type chatBot struct {
-	channels []botChannel
+	channels map[string]botChannel
 	client   *twitch.Client
 }
 
 // Creates a new chat bot instance.
 func NewChatBot(config *config.TwitchConfig) ChatBot {
 	return &chatBot{
-		channels: nil,
+		channels: make(map[string]botChannel),
 		client:   twitch.NewClient(config.UserName, config.AccessToken),
 	}
 }
@@ -35,12 +35,17 @@ func (c chatBot) Join(config *config.ChannelConfig) ChatBot {
 	channel := newChannel(c.client, config)
 
 	c.client.Join(channel.name)
-	c.channels = append(c.channels, *channel)
+	c.channels[channel.name] = *channel
 
 	return c
 }
 
 func (c chatBot) Start() error {
+	c.client.OnNewMessage(func(channel string, user twitch.User, message twitch.Message) {
+		if botChannel, hasChannel := c.channels[channel]; hasChannel {
+			botChannel.handle(&user, &message)
+		}
+	})
 	return c.client.Connect()
 }
 

@@ -18,7 +18,8 @@ func CreateWrCommandBuilder() ChatCommandBuilder {
 func handleWrCommand(parameters map[string]string) (message string, err error) {
 	mapName, hasMapName := parameters["map"]
 
-	gameState, gsiError := gsi.GetGameState()
+	// TODO Fix GSI call
+	gameState, gsiError := gsi.NewClient("", 0, nil).GetGameState("")
 	if gsiError != nil {
 		return "", errors.New("could not retrieve KZ game play")
 	}

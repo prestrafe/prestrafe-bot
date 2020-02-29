@@ -32,3 +32,11 @@ func newChannel(client *twitch.Client, config *config.ChannelConfig) *botChannel
 		},
 	}
 }
+
+func (c *botChannel) handle(user *twitch.User, message *twitch.Message) {
+	for _, command := range c.commands {
+		if command.TryHandle(user, message, c.channelSink) {
+			return
+		}
+	}
+}
