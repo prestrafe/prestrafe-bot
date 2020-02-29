@@ -9,25 +9,36 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"prestrafe-bot/config"
 )
 
-type Server struct {
-	verificationToken string
-	ttl               time.Duration
-	port              int
+// Defines the public API for the Game State Integration server. The server acts as a rely between the CSGO GSI API,
+// which sends game state data to a configured web-hook and potential clients, which may wish to consume this data as a
+// service, without providing their own HTTP server. The GSI server supports multiple tenants, which are identified by
+// their authentication token, that is send with each GSI web-hook call.
+type Server interface {
+	// Starts the server in the current thread and blocks until an error occurs.
+	Start() error
+}
+
+type server struct {
+	port int
+	ttl  time.Duration
 
 	gameStates  map[string]*GameState
 	lastUpdates map[string]time.Time
 }
 
-func CreateServer(verificationToken string, ttl time.Duration) *Server {
-	return &Server{
-		verificationToken: verificationToken,
-		ttl:               ttl,
+// Creates a new GSI server.
+func NewServer(config *config.GsiConfig) Server {
+	return &server{
+		port: config.Port,
+		ttl:  time.Duration(config.TTL) * time.Second,
 	}
 }
 
-func (server *Server) ListenAndServer() error {
+func (server *server) Start() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/update", server.handleGsiUpdate)
 	mux.HandleFunc("/get", server.handleGsiGet)
@@ -38,7 +49,7 @@ func (server *Server) ListenAndServer() error {
 	return http.ListenAndServe(fmt.Sprintf(":%d", server.port), mux)
 }
 
-func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
+func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
 		log.Printf("GSI-UPDATE: Method not allowed from %s\n", request.Host)
@@ -86,7 +97,7 @@ func (server *Server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 	writer.WriteHeader(http.StatusOK)
 }
 
-func (server *Server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
+func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
 		log.Printf("GSI-GET: Method not allowed from %s\n", request.Host)
