@@ -82,7 +82,7 @@ func (c *chatCommand) TryHandle(user *twitch.User, message *twitch.Message, mess
 	}
 
 	if c.isOnCoolDown() {
-		messageSink("This command has a cool down of %d seconds. Please try again later.", c.coolDown.Seconds())
+		messageSink("This command has a cool down of %f seconds. Please try again later.", c.coolDown.Seconds())
 		return true
 	}
 
