@@ -23,7 +23,7 @@ func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 		mapName, hasMapName := ctx.Parameter("map")
 
 		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil {
+		if gsiError != nil || !gameState.IsKZGameState() {
 			return "", errors.New("could not retrieve KZ game play")
 		}
 
@@ -31,7 +31,7 @@ func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 			bonus = "1"
 		}
 		if !hasMapName {
-			mapName = gameState.Map.Name
+			mapName = gameState.Map.GetMapName()
 		}
 
 		bonusNumber, _ := strconv.Atoi(bonus)
@@ -39,7 +39,7 @@ func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 			return fmt.Sprintf("'%s' is not a valid bonus number.", bonus), nil
 		}
 
-		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), bonusNumber, gameState.Player.SteamId)
+		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), bonusNumber, gameState.Provider.SteamId)
 
 		message = fmt.Sprintf("PB of %s on %s Bonus %d [%s]: ", gameState.Player.Name, mapName, bonusNumber, gameState.Player.Clan)
 		if nub != nil && apiError == nil {

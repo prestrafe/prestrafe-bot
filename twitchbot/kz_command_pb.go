@@ -20,17 +20,17 @@ func createPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 		mapName, hasMapName := ctx.Parameter("map")
 
 		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil {
+		if gsiError != nil || !gameState.IsKZGameState() {
 			return "", errors.New("could not retrieve KZ game play")
 		}
 
 		if !hasMapName {
-			mapName = gameState.Map.Name
+			mapName = gameState.Map.GetMapName()
 		}
 
-		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), 0, gameState.Player.SteamId)
+		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), 0, gameState.Provider.SteamId)
 
-		message = fmt.Sprintf("PB of %s on %s [%s]: ", gameState.Player.Name, gameState.Map.Name, gameState.Player.Clan)
+		message = fmt.Sprintf("PB of %s on %s [%s]: ", gameState.Player.Name, gameState.Map.GetMapName(), gameState.Player.Clan)
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP)", nub.FormattedTime(), nub.Teleports)
 		} else {

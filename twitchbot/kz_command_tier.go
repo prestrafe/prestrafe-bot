@@ -21,11 +21,11 @@ func createTierHandler(gsiClient gsi.Client) ChatCommandHandler {
 
 		if !hasMapName {
 			gameState, gsiError := gsiClient.GetGameState()
-			if gsiError != nil {
+			if gsiError != nil || !gameState.IsKZGameState() {
 				return "", errors.New("could not retrieve KZ game play")
 			}
 
-			mapName = gameState.Map.Name
+			mapName = gameState.Map.GetMapName()
 		}
 
 		globalMap, apiError := globalapi.GetMapByName(mapName)

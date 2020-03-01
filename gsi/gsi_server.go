@@ -1,14 +1,17 @@
 package gsi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 
 	"prestrafe-bot/config"
 )
@@ -23,96 +26,61 @@ type Server interface {
 }
 
 type server struct {
-	port        int
-	ttl         time.Duration
-	gameStates  map[string]*GameState
-	lastUpdates map[string]time.Time
+	port       int
+	store      Store
+	httpServer *http.Server
+	upgrader   *websocket.Upgrader
 }
 
 // Creates a new GSI server.
 func NewServer(config *config.GsiConfig) Server {
 	return &server{
 		config.Port,
-		time.Duration(config.TTL) * time.Second,
-		make(map[string]*GameState),
-		make(map[string]time.Time),
+		NewStore(time.Duration(config.TTL) * time.Second),
+		nil,
+		nil,
 	}
 }
 
 func (server *server) Start() error {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/update", server.handleGsiUpdate)
-	mux.HandleFunc("/get", server.handleGsiGet)
-	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+	router := mux.NewRouter()
+	router.Path("/get").Methods("GET").HandlerFunc(server.handleGsiGet)
+	router.Path("/update").Methods("POST").HandlerFunc(server.handleGsiUpdate)
+	router.Path("/websocket").Methods("GET").HandlerFunc(server.handleGsiWebsocket)
+	router.PathPrefix("/").HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
 	})
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", server.port), mux)
+	server.httpServer = &http.Server{
+		Addr:         fmt.Sprintf("0.0.0.0:%d", server.port),
+		Handler:      router,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+	}
+
+	server.upgrader = &websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(request *http.Request) bool {
+			return true
+		},
+	}
+
+	return server.httpServer.ListenAndServe()
 }
 
-func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
-	if request.Method != "POST" {
-		writer.WriteHeader(http.StatusMethodNotAllowed)
-		log.Printf("GSI-UPDATE: Method not allowed from %s\n", request.Host)
-		return
-	}
-	if request.Body == nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI-UPDATE: No body from %s\n", request.Host)
-		return
-	}
-
-	body, ioError := ioutil.ReadAll(request.Body)
-	if ioError != nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI-UPDATE: Empty body from %s\n", request.Host)
-		return
-	}
-
-	gameState := new(GameState)
-	if jsonError := json.Unmarshal(body, gameState); jsonError != nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		log.Printf("GSI-UPDATE: Bad body from %s\n", request.Host)
-		return
-	}
-
-	authToken := gameState.Auth.Token
-	gameState.Auth = nil
-
-	if isValidGameState(gameState) {
-		gameState.Map.Name = cleanupMapName(gameState.Map.Name)
-
-		server.gameStates[authToken] = gameState
-		server.lastUpdates[authToken] = time.Now()
-	} else {
-		delete(server.gameStates, authToken)
-		delete(server.lastUpdates, authToken)
-	}
-
-	writer.WriteHeader(http.StatusOK)
+func (server *server) Stop() error {
+	return server.httpServer.Shutdown(context.Background())
 }
 
 func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Request) {
-	if request.Method != "GET" {
-		writer.WriteHeader(http.StatusMethodNotAllowed)
-		log.Printf("GSI-GET: Method not allowed from %s\n", request.Host)
+	if !strings.HasPrefix(request.Header.Get("Authorization"), "GSI ") {
+		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	if !strings.HasPrefix(request.Header.Get("Authorization"), "GSI ") {
-		writer.WriteHeader(http.StatusUnauthorized)
-		log.Printf("GSI-GET: No GSI token provided %s\n", request.Host)
-	}
-
 	authToken := request.Header.Get("Authorization")[4:]
-
-	if lastUpdate, hasLastUpdate := server.lastUpdates[authToken]; hasLastUpdate {
-		if lastUpdate.Before(time.Now().Add(-server.ttl)) {
-			delete(server.gameStates, authToken)
-		}
-	}
-
-	gameState, hasGameState := server.gameStates[authToken]
+	gameState, hasGameState := server.store.Get(authToken)
 	if !hasGameState {
 		writer.WriteHeader(http.StatusNotFound)
 		return
@@ -121,7 +89,6 @@ func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 	response, err := json.Marshal(gameState)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		log.Printf("GSI-GET: Could not serialize game state %s\n", request.Host)
 		return
 	}
 
@@ -130,24 +97,57 @@ func (server *server) handleGsiGet(writer http.ResponseWriter, request *http.Req
 
 	if _, err = writer.Write(response); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		log.Printf("GSI-GET: Could not write game state %s\n", request.Host)
 		return
 	}
 }
 
-func isValidGameState(gameState *GameState) bool {
-	if gameState.Player == nil || gameState.Map == nil {
-		return false
+func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.Request) {
+	body, ioError := ioutil.ReadAll(request.Body)
+	if ioError != nil || body == nil || len(body) <= 0 {
+		writer.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
-	matchString, err := regexp.MatchString("^(workshop/[0-9]+/)?(kz|kzpro|skz|vnl|xc)_.+$", gameState.Map.Name)
-	return matchString && err == nil
+	gameState := new(GameState)
+	if jsonError := json.Unmarshal(body, gameState); jsonError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	authToken := gameState.Auth.Token
+	gameState.Auth = nil
+
+	if gameState.Provider != nil {
+		server.store.Put(authToken, gameState)
+	} else {
+		server.store.Remove(authToken)
+	}
+
+	writer.WriteHeader(http.StatusOK)
 }
 
-func cleanupMapName(mapName string) string {
-	if strings.HasPrefix(mapName, "workshop") {
-		return mapName[strings.LastIndex(mapName, "/")+1:]
+func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *http.Request) {
+	authToken := request.Header.Get("Sec-WebSocket-Protocol")
+	if authToken == "" {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
 	}
 
-	return mapName
+	conn, err := server.upgrader.Upgrade(writer, request, nil)
+	if err != nil {
+		_ = conn.Close()
+		return
+	}
+
+	channel := server.store.Channel(authToken)
+
+	for {
+		select {
+		case gameState, more := <-channel:
+			if err := conn.WriteJSON(gameState); err != nil || !more {
+				_ = conn.Close()
+				return
+			}
+		}
+	}
 }
