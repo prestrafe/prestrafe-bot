@@ -84,11 +84,12 @@ func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.Chan
 		Build(),
 	)
 
+	channelName := config.Name
 	return &botChannel{
-		config.Name,
+		channelName,
 		commands,
 		func(format string, a ...interface{}) {
-			client.Say(config.Name, fmt.Sprintf(format, a...))
+			client.Say(channelName, fmt.Sprintf(format, a...))
 		},
 	}
 }
