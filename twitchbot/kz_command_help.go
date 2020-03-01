@@ -6,8 +6,8 @@ import (
 )
 
 func NewHelpCommand(commands []ChatCommand) ChatCommandBuilder {
-	return NewChatCommandBuilder("kz").
-		WithAlias("kzhelp", "helpkz", "kzcommands").
+	return NewChatCommandBuilder("prestrafe").
+		WithAlias("prestrafebot", "kz", "kzhelp", "helpkz", "kzcommands").
 		WithHandler(func(ctx CommandContext) (msg string, err error) {
 			commandStrings := make([]string, 0)
 
