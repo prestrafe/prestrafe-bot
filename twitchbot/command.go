@@ -112,22 +112,11 @@ func (c *chatCommand) String() string {
 }
 
 func (c *chatCommand) matchesPrefix(message string) bool {
-	if !strings.HasPrefix(message, commandPrefix) {
-		return false
-	}
+	namePattern := strings.Join(append(c.aliases, c.name), "|")
+	commandPattern := fmt.Sprintf("^%s(%s)((\\s.+)|$)", commandPrefix, namePattern)
 
-	subMessage := message[len(commandPrefix):]
-	if strings.HasPrefix(subMessage, c.name) {
-		return true
-	}
-
-	for _, alias := range c.aliases {
-		if strings.HasPrefix(subMessage, alias) {
-			return true
-		}
-	}
-
-	return false
+	matchString, _ := regexp.MatchString(commandPattern, message)
+	return matchString
 }
 
 func (c *chatCommand) canExecute(user *twitch.User) bool {

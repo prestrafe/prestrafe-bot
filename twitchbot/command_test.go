@@ -178,6 +178,16 @@ func TestTryHandle(t *testing.T) {
 	assert.False(t, disabledCommand.TryHandle(normalUser, &twitch.Message{Text: "!name 42"}, abyss))
 }
 
+func TestCommandDetectionRegression(t *testing.T) {
+	mapCommand := NewChatCommandBuilder("map").WithParameter("map", false, "[A-Za-z0-9_]+").build()
+	pbCommand := NewChatCommandBuilder("pb").WithAlias("pr").WithParameter("map", false, "[A-Za-z0-9_]+").build()
+	normalUser := &twitch.User{Badges: map[string]int{}}
+	abyss := func(format string, a ...interface{}) {}
+
+	assert.False(t, mapCommand.TryHandle(normalUser, &twitch.Message{Text: "!mapcomp"}, abyss))
+	assert.False(t, pbCommand.TryHandle(normalUser, &twitch.Message{Text: "!prestrafebot"}, abyss))
+}
+
 func testCommandConfig(enabled bool, subOnly bool, coolDown int) *config.ChatCommandConfig {
 	return &config.ChatCommandConfig{
 		Name:     "",
