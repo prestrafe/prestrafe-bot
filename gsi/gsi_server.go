@@ -46,7 +46,7 @@ func (server *server) Start() error {
 	router := mux.NewRouter()
 	router.Path("/get").Methods("GET").HandlerFunc(server.handleGsiGet)
 	router.Path("/update").Methods("POST").HandlerFunc(server.handleGsiUpdate)
-	router.Path("/websocket/{authToken}").Methods("GET").HandlerFunc(server.handleGsiWebsocket)
+	router.Path("/websocket").Methods("GET").HandlerFunc(server.handleGsiWebsocket)
 	router.PathPrefix("/").HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		log.Printf("Unhandled route: %s %s\n", request.Method, request.URL)
 	})
@@ -127,8 +127,8 @@ func (server *server) handleGsiUpdate(writer http.ResponseWriter, request *http.
 }
 
 func (server *server) handleGsiWebsocket(writer http.ResponseWriter, request *http.Request) {
-	authToken, authTokenPresent := mux.Vars(request)["authToken"]
-	if !authTokenPresent {
+	authToken := request.Header.Get("Sec-WebSocket-Protocol")
+	if authToken == "" {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
