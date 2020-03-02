@@ -36,9 +36,9 @@ func createRankHandler(gsiClient gsi.Client) ChatCommandHandler {
 
 		rank, apiError := globalapi.GetPlayerRank(gameState.Player.TimerModeId(), gameState.Provider.SteamId, teleports)
 		if rank == nil || apiError != nil {
-			return fmt.Sprintf("Points for %s [%s]: Unknown", gameState.Player.Name, gameState.Player.TimerModeName()), nil
+			return fmt.Sprintf("Points for %s [%s]: Unknown", ctx.Channel(), gameState.Player.TimerModeName()), nil
 		} else {
-			return fmt.Sprintf("Points for %s [%s]: %d points with %d finishes", gameState.Player.Name, gameState.Player.TimerModeName(), rank.Points, rank.Finishes), nil
+			return fmt.Sprintf("Points for %s [%s]: %d points with %d finishes", ctx.Channel(), gameState.Player.TimerModeName(), rank.Points, rank.Finishes), nil
 		}
 	}
 }

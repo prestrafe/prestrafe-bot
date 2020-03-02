@@ -102,7 +102,7 @@ func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.Chan
 
 func (c *botChannel) handle(user *twitch.User, message *twitch.Message) {
 	for _, command := range c.commands {
-		if command.TryHandle(user, message, c.channelSink) {
+		if command.TryHandle(c.name, user, message, c.channelSink) {
 			return
 		}
 	}

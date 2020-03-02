@@ -24,9 +24,9 @@ func NewJumpStatCommand(gsiClient gsi.Client, name, jumpType, jumpName string, m
 					binds = "with binds"
 				}
 
-				return fmt.Sprintf("%s record of %s: %.04f units, %d strafes, %s", jumpName, gameState.Player.Name, jumpStat.Distance, jumpStat.StrafeCount, binds), nil
+				return fmt.Sprintf("%s record of %s: %.04f units, %d strafes, %s", jumpName, ctx.Channel(), jumpStat.Distance, jumpStat.StrafeCount, binds), nil
 			} else {
-				return fmt.Sprintf("%s record of %s: None", jumpName, gameState.Player.Name), nil
+				return fmt.Sprintf("%s record of %s: None", jumpName, ctx.Channel()), nil
 			}
 		})
 }
