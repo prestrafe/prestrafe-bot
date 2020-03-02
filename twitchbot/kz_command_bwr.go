@@ -41,7 +41,7 @@ func createBWRHandler(gsiClient gsi.Client) ChatCommandHandler {
 
 		nub, pro, apiError := globalapi.GetWorldRecord(mapName, gameState.Player.TimerMode(), bonusNumber)
 
-		message = fmt.Sprintf("Global Records on %s Bonus %d [%s]: ", mapName, bonusNumber, gameState.Player.Clan)
+		message = fmt.Sprintf("Global Records on %s Bonus %d [%s]: ", mapName, bonusNumber, gameState.Player.TimerModeName())
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP) by %s", nub.FormattedTime(), nub.Teleports, nub.PlayerName)
 		} else {
