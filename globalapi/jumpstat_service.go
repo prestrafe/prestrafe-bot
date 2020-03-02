@@ -1,5 +1,7 @@
 package globalapi
 
+import "strconv"
+
 type JumpStat struct {
 	Id            int     `json:"id"`
 	ServerId      int     `json:"server_id"`
@@ -30,8 +32,12 @@ func GetJumpStatTop(jumpType string, criteria QueryParameters) (result []JumpSta
 	return
 }
 
-func GetJumpStatPersonalBest(jumpType string, steamId64 int64) (jumpStat *JumpStat, err error) {
-	jumpStats, err := GetJumpStatTop(jumpType, QueryParameters{"steam_id": convertSteamId(steamId64), "limit": "1"})
+func GetJumpStatPersonalBest(jumpType string, maxDistance int, steamId64 int64) (jumpStat *JumpStat, err error) {
+	jumpStats, err := GetJumpStatTop(jumpType, QueryParameters{
+		"steam_id":           convertSteamId(steamId64),
+		"less_than_distance": strconv.Itoa(maxDistance),
+		"limit":              "1",
+	})
 	if jumpStats != nil && len(jumpStats) > 0 {
 		jumpStat = &jumpStats[0]
 	}
