@@ -30,7 +30,7 @@ func createPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 
 		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), 0, gameState.Provider.SteamId)
 
-		message = fmt.Sprintf("PB of %s on %s [%s]: ", gameState.Player.Name, gameState.Map.GetMapName(), gameState.Player.Clan)
+		message = fmt.Sprintf("PB of %s on %s [%s]: ", gameState.Player.Name, gameState.Map.GetMapName(), gameState.Player.TimerModeName())
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP)", nub.FormattedTime(), nub.Teleports)
 		} else {
