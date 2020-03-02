@@ -37,10 +37,15 @@ func GetJumpStatPersonalBest(jumpType string, maxDistance int, steamId64 int64) 
 		"jumptype":           jumpType,
 		"steam_id":           convertSteamId(steamId64),
 		"less_than_distance": strconv.Itoa(maxDistance),
-		"limit":              "1",
+		"limit":              "25",
 	})
 	if jumpStats != nil && len(jumpStats) > 0 {
-		jumpStat = &jumpStats[0]
+		for i, js := range jumpStats {
+			if js.StrafeCount <= 15 {
+				jumpStat = &jumpStats[i]
+				return
+			}
+		}
 	}
 
 	return
