@@ -33,6 +33,12 @@ func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.Chan
 			WithConfig(config.GetCommandConfig("tier")).
 			Build(),
 
+		// Player commands
+		NewRankCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("rank")).
+			Build(),
+
 		// Record time commands
 		NewWRCommand(gsiClient).
 			WithConfig(config.GetCommandConfig("*")).

@@ -28,7 +28,7 @@ func createMapHandler(gsiClient gsi.Client) ChatCommandHandler {
 		}
 
 		globalMap, apiError := globalapi.GetMapByName(mapName)
-		if apiError != nil {
+		if globalMap == nil || apiError != nil {
 			return fmt.Sprintf("Map: %s (Not global)", mapName), nil
 		} else {
 			return fmt.Sprintf("Map: %s (T%d) - https://gokzstats.com/?map=%s&mode=%s", mapName, globalMap.Difficulty, mapName, gameState.Player.TimerMode()), nil
