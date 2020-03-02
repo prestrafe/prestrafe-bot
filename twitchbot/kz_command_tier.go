@@ -29,7 +29,7 @@ func createTierHandler(gsiClient gsi.Client) ChatCommandHandler {
 		}
 
 		globalMap, apiError := globalapi.GetMapByName(mapName)
-		if apiError != nil {
+		if globalMap == nil || apiError != nil {
 			return fmt.Sprintf("%s - Tier Unknown (Not global)", mapName), nil
 		} else {
 			return fmt.Sprintf("%s - Tier %d (%s)", mapName, globalMap.Difficulty, convertDifficultyToTier(globalMap.Difficulty)), nil

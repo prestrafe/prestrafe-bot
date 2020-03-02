@@ -74,6 +74,17 @@ func (player *PlayerState) TimerModeName() string {
 	return "KZT"
 }
 
+func (player *PlayerState) TimerModeId() int {
+	switch player.Clan {
+	case "SKZ":
+		return 201
+	case "VNL":
+		return 202
+	}
+
+	return 200
+}
+
 type MatchStats struct {
 	Kills   int `json:"kills"`
 	Assists int `json:"assists"`
