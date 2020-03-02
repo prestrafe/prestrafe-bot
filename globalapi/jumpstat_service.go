@@ -25,15 +25,16 @@ func (js *JumpStat) HasBinds() bool {
 	return js.IsCrouchBind != 0 || js.IsForwardBind != 0
 }
 
-func GetJumpStatTop(jumpType string, criteria QueryParameters) (result []JumpStat, err error) {
+func GetJumpStats(criteria QueryParameters) (result []JumpStat, err error) {
 	result = []JumpStat{}
-	err = globalApiGet("jumpstats/"+jumpType+"/top", &result, criteria)
+	err = globalApiGet("jumpstats", &result, criteria)
 
 	return
 }
 
 func GetJumpStatPersonalBest(jumpType string, maxDistance int, steamId64 int64) (jumpStat *JumpStat, err error) {
-	jumpStats, err := GetJumpStatTop(jumpType, QueryParameters{
+	jumpStats, err := GetJumpStats(QueryParameters{
+		"jumptype":           jumpType,
 		"steam_id":           convertSteamId(steamId64),
 		"less_than_distance": strconv.Itoa(maxDistance),
 		"limit":              "1",
