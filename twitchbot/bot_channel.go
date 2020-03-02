@@ -2,6 +2,7 @@ package twitchbot
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gempir/go-twitch-irc"
 
@@ -95,7 +96,7 @@ func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.Chan
 		channelName,
 		commands,
 		func(format string, a ...interface{}) {
-			client.Say(channelName, fmt.Sprintf(format, a...))
+			client.Say(strings.ToLower(channelName), fmt.Sprintf(format, a...))
 		},
 	}
 }

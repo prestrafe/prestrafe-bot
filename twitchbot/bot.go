@@ -1,6 +1,8 @@
 package twitchbot
 
 import (
+	"strings"
+
 	"github.com/gempir/go-twitch-irc"
 
 	"prestrafe-bot/config"
@@ -38,9 +40,10 @@ func (c chatBot) Join(config *config.ChannelConfig) ChatBot {
 	gsiClient := gsi.NewClient("localhost", c.gsiConfig.Port, config.GsiToken)
 
 	channel := newChannel(c.client, gsiClient, config)
+	channelName := strings.ToLower(channel.name)
 
-	c.client.Join(channel.name)
-	c.channels[channel.name] = *channel
+	c.client.Join(channelName)
+	c.channels[channelName] = *channel
 
 	return c
 }
