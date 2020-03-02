@@ -52,27 +52,27 @@ func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.Chan
 			Build(),
 
 		// Jump Stat commands
-		NewJumpStatCommand(gsiClient, "bh", "bhop", "Bunnyhop").
+		NewJumpStatCommand(gsiClient, "bh", "bhop", "Bunnyhop", 400).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),
-		NewJumpStatCommand(gsiClient, "dh", "drophop", "Drop Bunnyhop").
+		NewJumpStatCommand(gsiClient, "dh", "drophop", "Drop Bunnyhop", 400).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),
-		NewJumpStatCommand(gsiClient, "laj", "ladderjump", "Ladder Jump").
+		NewJumpStatCommand(gsiClient, "laj", "ladderjump", "Ladder Jump", 400).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),
-		NewJumpStatCommand(gsiClient, "lj", "longjump", "Long Jump").
+		NewJumpStatCommand(gsiClient, "lj", "longjump", "Long Jump", 300).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),
-		NewJumpStatCommand(gsiClient, "mbh", "multibhop", "Multi Bunnyhop").
+		NewJumpStatCommand(gsiClient, "mbh", "multibhop", "Multi Bunnyhop", 400).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),
-		NewJumpStatCommand(gsiClient, "wj", "weirdjump", "Weird Jump").
+		NewJumpStatCommand(gsiClient, "wj", "weirdjump", "Weird Jump", 400).
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("jumpstat")).
 			Build(),
