@@ -33,7 +33,7 @@ type ChatCommand interface {
 	// Tries to handle a chat message from a chat user. If the command is able to identify that the message is handled
 	// by it, this method returns true, regardless if the command later produces an error. It returns false only if the
 	// command does not claim responsibility for the message.
-	TryHandle(user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool
+	TryHandle(channel string, user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool
 	// Returns a string representation of the command. This is usually the signature of the command.
 	String() string
 }
@@ -62,7 +62,7 @@ func (c *chatCommand) SubOnly() bool {
 	return c.subOnly
 }
 
-func (c *chatCommand) TryHandle(user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool {
+func (c *chatCommand) TryHandle(channel string, user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool {
 	if !c.enabled {
 		return false
 	}
@@ -86,7 +86,7 @@ func (c *chatCommand) TryHandle(user *twitch.User, message *twitch.Message, mess
 		return true
 	}
 
-	output, err := c.handler(&commandContext{c.parseParameters(message.Text)})
+	output, err := c.handler(&commandContext{channel, c.parseParameters(message.Text)})
 	if err != nil {
 		messageSink(err.Error())
 	} else {
