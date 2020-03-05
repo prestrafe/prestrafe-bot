@@ -5,17 +5,17 @@ import (
 	"fmt"
 
 	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
-	"gitlab.com/prestrafe/prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewRankCommand(gsiClient gsi.Client) ChatCommandBuilder {
+func NewRankCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("rank").
 		WithAlias("points").
 		WithParameter("type", false, "(all|nub|pro|tp)").
 		WithHandler(createRankHandler(gsiClient))
 }
 
-func createRankHandler(gsiClient gsi.Client) ChatCommandHandler {
+func createRankHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		_type, hasType := ctx.Parameter("type")
 		hasTeleports := false
@@ -30,15 +30,15 @@ func createRankHandler(gsiClient gsi.Client) ChatCommandHandler {
 		}
 
 		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil || !gameState.IsKZGameState() {
+		if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
 			return "", errors.New("could not retrieve KZ game play")
 		}
 
-		rank, apiError := globalapi.GetPlayerRank(gameState.Player.TimerModeId(), gameState.Provider.SteamId, teleports)
+		rank, apiError := globalapi.GetPlayerRank(gsiclient.TimerModeId(gameState.Player), gameState.Provider.SteamId, teleports)
 		if rank == nil || apiError != nil {
-			return fmt.Sprintf("Points for %s [%s]: Unknown", ctx.Channel(), gameState.Player.TimerModeName()), nil
+			return fmt.Sprintf("Points for %s [%s]: Unknown", ctx.Channel(), gsiclient.TimerModeName(gameState.Player)), nil
 		} else {
-			return fmt.Sprintf("Points for %s [%s]: %d points with %d finishes", ctx.Channel(), gameState.Player.TimerModeName(), rank.Points, rank.Finishes), nil
+			return fmt.Sprintf("Points for %s [%s]: %d points with %d finishes", ctx.Channel(), gsiclient.TimerModeName(gameState.Player), rank.Points, rank.Finishes), nil
 		}
 	}
 }

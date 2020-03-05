@@ -5,32 +5,32 @@ import (
 	"fmt"
 
 	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
-	"gitlab.com/prestrafe/prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewPBCommand(gsiClient gsi.Client) ChatCommandBuilder {
+func NewPBCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("pb").
 		WithAlias("pr").
 		WithParameter("map", false, "[A-Za-z0-9_]+").
 		WithHandler(createPBHandler(gsiClient))
 }
 
-func createPBHandler(gsiClient gsi.Client) ChatCommandHandler {
+func createPBHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
 
 		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil || !gameState.IsKZGameState() {
+		if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
 			return "", errors.New("could not retrieve KZ game play")
 		}
 
 		if !hasMapName {
-			mapName = gameState.Map.GetMapName()
+			mapName = gsiclient.GetMapName(gameState.Map)
 		}
 
-		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), 0, gameState.Provider.SteamId)
+		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gsiclient.TimerMode(gameState.Player), 0, gameState.Provider.SteamId)
 
-		message = fmt.Sprintf("PB of %s on %s [%s]: ", ctx.Channel(), mapName, gameState.Player.TimerModeName())
+		message = fmt.Sprintf("PB of %s on %s [%s]: ", ctx.Channel(), mapName, gsiclient.TimerModeName(gameState.Player))
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP)", nub.FormattedTime(), nub.Teleports)
 		} else {

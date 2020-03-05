@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
-	"gitlab.com/prestrafe/prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewBPBCommand(gsiClient gsi.Client) ChatCommandBuilder {
+func NewBPBCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("bpb").
 		WithAlias("bpr").
 		WithParameter("bonus", false, "[0-9]").
@@ -17,13 +17,13 @@ func NewBPBCommand(gsiClient gsi.Client) ChatCommandBuilder {
 		WithHandler(createBPBHandler(gsiClient))
 }
 
-func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
+func createBPBHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		bonus, hasBonus := ctx.Parameter("bonus")
 		mapName, hasMapName := ctx.Parameter("map")
 
 		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil || !gameState.IsKZGameState() {
+		if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
 			return "", errors.New("could not retrieve KZ game play")
 		}
 
@@ -31,7 +31,7 @@ func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 			bonus = "1"
 		}
 		if !hasMapName {
-			mapName = gameState.Map.GetMapName()
+			mapName = gsiclient.GetMapName(gameState.Map)
 		}
 
 		bonusNumber, _ := strconv.Atoi(bonus)
@@ -39,9 +39,9 @@ func createBPBHandler(gsiClient gsi.Client) ChatCommandHandler {
 			return fmt.Sprintf("'%s' is not a valid bonus number.", bonus), nil
 		}
 
-		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gameState.Player.TimerMode(), bonusNumber, gameState.Provider.SteamId)
+		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gsiclient.TimerMode(gameState.Player), bonusNumber, gameState.Provider.SteamId)
 
-		message = fmt.Sprintf("PB of %s on %s Bonus %d [%s]: ", ctx.Channel(), mapName, bonusNumber, gameState.Player.TimerModeName())
+		message = fmt.Sprintf("PB of %s on %s Bonus %d [%s]: ", ctx.Channel(), mapName, bonusNumber, gsiclient.TimerModeName(gameState.Player))
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP) by %s", nub.FormattedTime(), nub.Teleports, nub.PlayerName)
 		} else {
