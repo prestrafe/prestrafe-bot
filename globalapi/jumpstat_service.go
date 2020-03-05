@@ -1,6 +1,9 @@
 package globalapi
 
-import "strconv"
+import (
+	"prestrafe-bot/utils"
+	"strconv"
+)
 
 type JumpStat struct {
 	Id            int     `json:"id"`
@@ -35,7 +38,7 @@ func GetJumpStats(criteria QueryParameters) (result []JumpStat, err error) {
 func GetJumpStatPersonalBest(jumpType string, maxDistance int, steamId64 int64) (jumpStat *JumpStat, err error) {
 	jumpStats, err := GetJumpStats(QueryParameters{
 		"jumptype":           jumpType,
-		"steam_id":           convertSteamId(steamId64),
+		"steam_id":           utils.ConvertSteamId(steamId64),
 		"less_than_distance": strconv.Itoa(maxDistance),
 		"limit":              "25",
 	})

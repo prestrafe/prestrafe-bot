@@ -2,6 +2,7 @@ package globalapi
 
 import (
 	"fmt"
+	"prestrafe-bot/utils"
 	"strconv"
 )
 
@@ -72,7 +73,7 @@ func GetPersonalRecord(mapName, mode string, stage int, steamId64 int64) (nub, p
 	nubs, err := GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
-		"steam_id":          convertSteamId(steamId64),
+		"steam_id":          utils.ConvertSteamId(steamId64),
 		"tickrate":          "128",
 		"stage":             strconv.Itoa(stage),
 		"limit":             "1",
@@ -80,7 +81,7 @@ func GetPersonalRecord(mapName, mode string, stage int, steamId64 int64) (nub, p
 	pros, err := GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
-		"steam_id":          convertSteamId(steamId64),
+		"steam_id":          utils.ConvertSteamId(steamId64),
 		"has_teleports":     "false",
 		"tickrate":          "128",
 		"stage":             strconv.Itoa(stage),

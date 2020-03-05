@@ -43,6 +43,10 @@ func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.Chan
 			WithConfig(config.GetCommandConfig("*")).
 			WithConfig(config.GetCommandConfig("rank")).
 			Build(),
+		NewStatsCommand(gsiClient).
+			WithConfig(config.GetCommandConfig("*")).
+			WithConfig(config.GetCommandConfig("stats")).
+			Build(),
 
 		// Record time commands
 		NewWRCommand(gsiClient).
