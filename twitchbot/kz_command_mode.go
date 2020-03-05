@@ -3,7 +3,7 @@ package twitchbot
 import (
 	"errors"
 
-	"prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsi"
 )
 
 func NewModeCommand(gsiClient gsi.Client) ChatCommandBuilder {

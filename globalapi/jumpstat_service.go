@@ -1,8 +1,9 @@
 package globalapi
 
 import (
-	"prestrafe-bot/utils"
 	"strconv"
+
+	"gitlab.com/prestrafe/prestrafe-bot/utils"
 )
 
 type JumpStat struct {

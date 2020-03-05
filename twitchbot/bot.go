@@ -5,8 +5,8 @@ import (
 
 	"github.com/gempir/go-twitch-irc"
 
-	"prestrafe-bot/config"
-	"prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/config"
+	"gitlab.com/prestrafe/prestrafe-bot/gsi"
 )
 
 // This interface defines the public API of the chat bot. The API is pretty slim, as most of the work is done

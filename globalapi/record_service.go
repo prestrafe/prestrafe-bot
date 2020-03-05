@@ -2,8 +2,9 @@ package globalapi
 
 import (
 	"fmt"
-	"prestrafe-bot/utils"
 	"strconv"
+
+	"gitlab.com/prestrafe/prestrafe-bot/utils"
 )
 
 type Record struct {

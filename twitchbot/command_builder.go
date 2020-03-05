@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"prestrafe-bot/config"
+	"gitlab.com/prestrafe/prestrafe-bot/config"
 )
 
 // The command builder is used to create new command definitions in a declarative, readable and type-safe way.

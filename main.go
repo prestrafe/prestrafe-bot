@@ -1,9 +1,9 @@
 package main
 
 import (
-	"prestrafe-bot/config"
-	"prestrafe-bot/gsi"
-	"prestrafe-bot/twitchbot"
+	"gitlab.com/prestrafe/prestrafe-bot/config"
+	"gitlab.com/prestrafe/prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/twitchbot"
 )
 
 func main() {

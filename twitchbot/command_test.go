@@ -7,7 +7,7 @@ import (
 	"github.com/gempir/go-twitch-irc"
 	"github.com/stretchr/testify/assert"
 
-	"prestrafe-bot/config"
+	"gitlab.com/prestrafe/prestrafe-bot/config"
 )
 
 func TestCommandBuilderDefaults(t *testing.T) {
