@@ -7,6 +7,7 @@
 - `!mode`: Displays the currently played KZ timer mode.
 - `!pb (map-name)`: Displays the personal best time for the main stage.
 - `!rank (tp/pro/nub/all)`: Displays rank and map completion information.
+- `!stats`: Displays a link to the GOKZ-Stats page.
 - `!tier (map-name)`: Display the difficulty level for the map.
 - `!wr (map-name)`: Displays the world record time for the main stage.
 
