@@ -6,8 +6,8 @@ import (
 
 	"github.com/gempir/go-twitch-irc"
 
-	"prestrafe-bot/config"
-	"prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/config"
+	"gitlab.com/prestrafe/prestrafe-bot/gsi"
 )
 
 type botChannel struct {

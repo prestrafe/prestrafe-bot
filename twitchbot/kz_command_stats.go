@@ -3,9 +3,10 @@ package twitchbot
 import (
 	"errors"
 	"fmt"
-	"prestrafe-bot/utils"
 
-	"prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/utils"
+
+	"gitlab.com/prestrafe/prestrafe-bot/gsi"
 )
 
 func NewStatsCommand(gsiClient gsi.Client) ChatCommandBuilder {

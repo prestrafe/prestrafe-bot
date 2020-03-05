@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"prestrafe-bot/globalapi"
-	"prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsi"
 )
 
 func NewJumpStatCommand(gsiClient gsi.Client, name, jumpType, jumpName string, maxDistance int) ChatCommandBuilder {

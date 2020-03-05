@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 
-	"prestrafe-bot/config"
+	"gitlab.com/prestrafe/prestrafe-bot/config"
 )
 
 // Defines the public API for the Game State Integration server. The server acts as a rely between the CSGO GSI API,

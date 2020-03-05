@@ -1,4 +1,4 @@
-module prestrafe-bot
+module gitlab.com/prestrafe/prestrafe-bot
 
 go 1.14
 

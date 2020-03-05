@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"prestrafe-bot/globalapi"
-	"prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsi"
 )
 
 func NewBWRCommand(gsiClient gsi.Client) ChatCommandBuilder {
