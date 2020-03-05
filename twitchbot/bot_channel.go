@@ -7,7 +7,7 @@ import (
 	"github.com/gempir/go-twitch-irc"
 
 	"gitlab.com/prestrafe/prestrafe-bot/config"
-	"gitlab.com/prestrafe/prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
 type botChannel struct {
@@ -16,7 +16,7 @@ type botChannel struct {
 	channelSink ChatMessageSink
 }
 
-func newChannel(client *twitch.Client, gsiClient gsi.Client, config *config.ChannelConfig) *botChannel {
+func newChannel(client *twitch.Client, gsiClient gsiclient.Client, config *config.ChannelConfig) *botChannel {
 	commands := []ChatCommand{
 		// Troll commands
 		NewGlobalCheckCommand().

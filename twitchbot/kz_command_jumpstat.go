@@ -5,15 +5,15 @@ import (
 	"fmt"
 
 	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
-	"gitlab.com/prestrafe/prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewJumpStatCommand(gsiClient gsi.Client, name, jumpType, jumpName string, maxDistance int) ChatCommandBuilder {
+func NewJumpStatCommand(gsiClient gsiclient.Client, name, jumpType, jumpName string, maxDistance int) ChatCommandBuilder {
 	return NewChatCommandBuilder(name).
 		WithAlias(fmt.Sprintf("%spb", name), jumpType).
 		WithHandler(func(ctx CommandContext) (message string, err error) {
 			gameState, gsiError := gsiClient.GetGameState()
-			if gsiError != nil || !gameState.IsKZGameState() {
+			if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
 				return "", errors.New("could not retrieve KZ game play")
 			}
 

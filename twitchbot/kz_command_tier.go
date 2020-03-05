@@ -5,27 +5,27 @@ import (
 	"fmt"
 
 	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
-	"gitlab.com/prestrafe/prestrafe-bot/gsi"
+	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewTierCommand(gsiClient gsi.Client) ChatCommandBuilder {
+func NewTierCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("tier").
 		WithAlias("difficulty").
 		WithParameter("map", false, "[A-Za-z0-9_]+").
 		WithHandler(createTierHandler(gsiClient))
 }
 
-func createTierHandler(gsiClient gsi.Client) ChatCommandHandler {
+func createTierHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
 
 		if !hasMapName {
 			gameState, gsiError := gsiClient.GetGameState()
-			if gsiError != nil || !gameState.IsKZGameState() {
+			if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
 				return "", errors.New("could not retrieve KZ game play")
 			}
 
-			mapName = gameState.Map.GetMapName()
+			mapName = gsiclient.GetMapName(gameState.Map)
 		}
 
 		globalMap, apiError := globalapi.GetMapByName(mapName)

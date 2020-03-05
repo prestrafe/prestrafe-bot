@@ -2,8 +2,8 @@ package main
 
 import (
 	"gitlab.com/prestrafe/prestrafe-bot/config"
-	"gitlab.com/prestrafe/prestrafe-bot/gsi"
 	"gitlab.com/prestrafe/prestrafe-bot/twitchbot"
+	gsi "gitlab.com/prestrafe/prestrafe-gsi"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 			fmt.Println(user, message)
 		}
 
-		client := twitch.NewClient(botConfig.Twitch.BotName, botConfig.Twitch.AccessToken)
+		client := twitch.New(botConfig.Twitch.BotName, botConfig.Twitch.AccessToken)
 		client.Join("nykan")
 		client.OnNewUsernoticeMessage(callback)
 		client.OnNewNoticeMessage(callback)
@@ -31,7 +31,7 @@ func main() {
 }
 
 func runGameStateIntegration(botConfig *config.BotConfig) {
-	s := gsi.NewServer(&botConfig.Gsi)
+	s := gsi.NewServer("0.0.0.0", botConfig.Gsi.Port, botConfig.Gsi.TTL)
 	if err := s.Start(); err != nil {
 		panic(err)
 	}
