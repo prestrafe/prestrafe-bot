@@ -32,7 +32,7 @@ func (c *client) GetGameState() (*gsi.GameState, error) {
 	response, restErr := resty.New().
 		R().
 		SetHeader("Authorization", fmt.Sprintf("GSI %s", c.authToken)).
-		Get(fmt.Sprintf("http://%s:%d/get", c.host, c.port))
+		Get(fmt.Sprintf("http://%s:%d/", c.host, c.port))
 	if restErr != nil {
 		log.Println(restErr)
 		return nil, restErr
