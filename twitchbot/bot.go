@@ -37,7 +37,7 @@ func NewChatBot(twitchConfig *config.TwitchConfig, gsiConfig *config.GsiConfig) 
 }
 
 func (c chatBot) Join(config *config.ChannelConfig) ChatBot {
-	gsiClient := gsiclient.New("localhost", c.gsiConfig.Port, config.GsiToken)
+	gsiClient := gsiclient.New(c.gsiConfig.Addr, c.gsiConfig.Port, config.GsiToken)
 
 	channel := newChannel(c.client, gsiClient, config)
 	channelName := strings.ToLower(channel.name)

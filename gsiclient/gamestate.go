@@ -3,11 +3,47 @@ package gsiclient
 import (
 	"regexp"
 	"strings"
-
-	"gitlab.com/prestrafe/prestrafe-gsi"
 )
 
-func IsKZGameState(gameState *gsi.GameState) bool {
+type GameState struct {
+	Auth     *AuthState     `json:"auth"`
+	Map      *MapState      `json:"map"`
+	Player   *PlayerState   `json:"player"`
+	Provider *ProviderState `json:"provider"`
+}
+
+type AuthState struct {
+	Token string `json:"token"`
+}
+
+type ProviderState struct {
+	Name      string `json:"name"`
+	AppId     int    `json:"appid"`
+	Version   int    `json:"version"`
+	SteamId   int64  `json:"steamid,string"`
+	Timestamp int64  `json:"timestamp"`
+}
+
+type MapState struct {
+	Name string `json:"name"`
+}
+
+type PlayerState struct {
+	SteamId    int64       `json:"steamid,string"`
+	Clan       string      `json:"clan"`
+	Name       string      `json:"name"`
+	MatchStats *MatchStats `json:"match_stats"`
+}
+
+type MatchStats struct {
+	Kills   int `json:"kills"`
+	Assists int `json:"assists"`
+	Deaths  int `json:"deaths"`
+	Mvps    int `json:"mvps"`
+	Score   int `json:"score"`
+}
+
+func IsKZGameState(gameState *GameState) bool {
 	if gameState.Player == nil || gameState.Map == nil {
 		return false
 	}
@@ -16,14 +52,14 @@ func IsKZGameState(gameState *gsi.GameState) bool {
 	return matchString && err == nil
 }
 
-func GetMapName(mapState *gsi.MapState) string {
+func GetMapName(mapState *MapState) string {
 	if strings.HasPrefix(mapState.Name, "workshop") {
 		return mapState.Name[strings.LastIndex(mapState.Name, "/")+1:]
 	}
 
 	return mapState.Name
 }
-func TimerMode(player *gsi.PlayerState) string {
+func TimerMode(player *PlayerState) string {
 	switch player.Clan {
 	case "SKZ":
 		return "kz_simple"
@@ -34,7 +70,7 @@ func TimerMode(player *gsi.PlayerState) string {
 	return "kz_timer"
 }
 
-func TimerModeName(player *gsi.PlayerState) string {
+func TimerModeName(player *PlayerState) string {
 	switch player.Clan {
 	case "SKZ":
 		return "SKZ"
@@ -45,7 +81,7 @@ func TimerModeName(player *gsi.PlayerState) string {
 	return "KZT"
 }
 
-func TimerModeId(player *gsi.PlayerState) int {
+func TimerModeId(player *PlayerState) int {
 	switch player.Clan {
 	case "SKZ":
 		return 201
