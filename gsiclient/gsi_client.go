@@ -7,15 +7,13 @@ import (
 	"log"
 
 	"github.com/go-resty/resty/v2"
-
-	"gitlab.com/prestrafe/prestrafe-gsi"
 )
 
 // This interfaces defines the public API of the GSI client. The client can be used to retrieve information about the
 // current game state of a player, by connecting to a running GSI server. It handles authentication automatically.
 type Client interface {
 	// Retrieves the game state for the player that this client connects to.
-	GetGameState() (*gsi.GameState, error)
+	GetGameState() (*GameState, error)
 }
 
 type client struct {
@@ -28,7 +26,7 @@ func New(host string, port int, authToken string) Client {
 	return &client{host, port, authToken}
 }
 
-func (c *client) GetGameState() (*gsi.GameState, error) {
+func (c *client) GetGameState() (*GameState, error) {
 	response, restErr := resty.New().
 		R().
 		SetHeader("Authorization", fmt.Sprintf("GSI %s", c.authToken)).
@@ -44,7 +42,7 @@ func (c *client) GetGameState() (*gsi.GameState, error) {
 		return nil, errors.New(errorMessage)
 	}
 
-	result := new(gsi.GameState)
+	result := new(GameState)
 	if jsonErr := json.Unmarshal(response.Body(), result); jsonErr != nil {
 		log.Println(jsonErr)
 		return nil, jsonErr
