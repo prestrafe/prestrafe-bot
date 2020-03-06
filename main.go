@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	botConfig, configErr := config.ReadConfig("config.yaml")
+	botConfig, configErr := config.ReadConfig("config.yml")
 	if configErr != nil {
 		panic("Could not read config file: " + configErr.Error())
 	}
