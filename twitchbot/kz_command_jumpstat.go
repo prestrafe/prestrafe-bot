@@ -8,7 +8,7 @@ import (
 	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewJumpStatCommand(gsiClient gsiclient.Client, name, jumpType, jumpName string, maxDistance int) ChatCommandBuilder {
+func NewJumpStatCommand(gsiClient gsiclient.Client, apiClient globalapi.Client, name, jumpType, jumpName string, maxDistance int) ChatCommandBuilder {
 	return NewChatCommandBuilder(name).
 		WithAlias(fmt.Sprintf("%spb", name), jumpType).
 		WithHandler(func(ctx CommandContext) (message string, err error) {
@@ -17,7 +17,7 @@ func NewJumpStatCommand(gsiClient gsiclient.Client, name, jumpType, jumpName str
 				return "", errors.New("could not retrieve KZ game play")
 			}
 
-			jumpStat, apiError := globalapi.GetJumpStatPersonalBest(jumpType, maxDistance, gameState.Provider.SteamId)
+			jumpStat, apiError := (&globalapi.JumpStatServiceClient{Client: apiClient}).GetJumpStatPersonalBest(jumpType, maxDistance, gameState.Provider.SteamId)
 			if jumpStat != nil && apiError == nil {
 				binds := "no binds"
 				if jumpStat.HasBinds() {

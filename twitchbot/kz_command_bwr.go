@@ -9,15 +9,15 @@ import (
 	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewBWRCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
+func NewBWRCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("bwr").
 		WithAlias("bgr", "bgwr", "btop").
 		WithParameter("bonus", false, "[0-9]").
 		WithParameter("map", false, "[A-Za-z0-9_]+").
-		WithHandler(createBWRHandler(gsiClient))
+		WithHandler(createBWRHandler(gsiClient, apiClient))
 }
 
-func createBWRHandler(gsiClient gsiclient.Client) ChatCommandHandler {
+func createBWRHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		bonus, hasBonus := ctx.Parameter("bonus")
 		mapName, hasMapName := ctx.Parameter("map")
@@ -39,7 +39,7 @@ func createBWRHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 			return fmt.Sprintf("'%s' is not a valid bonus number.", bonus), nil
 		}
 
-		nub, pro, apiError := globalapi.GetWorldRecord(mapName, gsiclient.TimerMode(gameState.Player), bonusNumber)
+		nub, pro, apiError := (&globalapi.RecordServiceClient{Client: apiClient}).GetWorldRecord(mapName, gsiclient.TimerMode(gameState.Player), bonusNumber)
 
 		message = fmt.Sprintf("Global Records on %s Bonus %d [%s]: ", mapName, bonusNumber, gsiclient.TimerModeName(gameState.Player))
 		if nub != nil && apiError == nil {

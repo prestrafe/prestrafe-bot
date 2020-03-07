@@ -8,14 +8,14 @@ import (
 	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewPBCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
+func NewPBCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("pb").
 		WithAlias("pr").
 		WithParameter("map", false, "[A-Za-z0-9_]+").
-		WithHandler(createPBHandler(gsiClient))
+		WithHandler(createPBHandler(gsiClient, apiClient))
 }
 
-func createPBHandler(gsiClient gsiclient.Client) ChatCommandHandler {
+func createPBHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
 
@@ -28,7 +28,7 @@ func createPBHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 			mapName = gsiclient.GetMapName(gameState.Map)
 		}
 
-		nub, pro, apiError := globalapi.GetPersonalRecord(mapName, gsiclient.TimerMode(gameState.Player), 0, gameState.Provider.SteamId)
+		nub, pro, apiError := (&globalapi.RecordServiceClient{Client: apiClient}).GetPersonalRecord(mapName, gsiclient.TimerMode(gameState.Player), 0, gameState.Provider.SteamId)
 
 		message = fmt.Sprintf("PB of %s on %s [%s]: ", ctx.Channel(), mapName, gsiclient.TimerModeName(gameState.Player))
 		if nub != nil && apiError == nil {

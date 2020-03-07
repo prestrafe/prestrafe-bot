@@ -29,20 +29,25 @@ func (js *JumpStat) HasBinds() bool {
 	return js.IsCrouchBind != 0 || js.IsForwardBind != 0
 }
 
-func GetJumpStats(criteria QueryParameters) (result []JumpStat, err error) {
+type JumpStatServiceClient struct {
+	Client
+}
+
+func (s *JumpStatServiceClient) GetJumpStats(criteria QueryParameters) (result []JumpStat, err error) {
 	result = []JumpStat{}
-	err = globalApiGet("jumpstats", &result, criteria)
+	err = s.GetWithParameters("jumpstats", criteria, &result)
 
 	return
 }
 
-func GetJumpStatPersonalBest(jumpType string, maxDistance int, steamId64 int64) (jumpStat *JumpStat, err error) {
-	jumpStats, err := GetJumpStats(QueryParameters{
+func (s *JumpStatServiceClient) GetJumpStatPersonalBest(jumpType string, maxDistance int, steamId64 int64) (jumpStat *JumpStat, err error) {
+	jumpStats, err := s.GetJumpStats(QueryParameters{
 		"jumptype":           jumpType,
 		"steam_id":           utils.ConvertSteamId(steamId64),
 		"less_than_distance": strconv.Itoa(maxDistance),
 		"limit":              "25",
 	})
+
 	if jumpStats != nil && len(jumpStats) > 0 {
 		for i, js := range jumpStats {
 			if js.StrafeCount <= 15 {

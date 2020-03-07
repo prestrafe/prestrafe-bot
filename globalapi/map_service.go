@@ -1,5 +1,7 @@
 package globalapi
 
+import "strconv"
+
 type KzMap struct {
 	Id                  int    `json:"id"`
 	Name                string `json:"name"`
@@ -11,23 +13,27 @@ type KzMap struct {
 	ApprovedBySteamId64 int64  `json:"approved_by_steamid64"`
 }
 
-func GetMaps(criteria QueryParameters) (result []KzMap, err error) {
+type MapServiceClient struct {
+	Client
+}
+
+func (s *MapServiceClient) GetMaps(criteria QueryParameters) (result []KzMap, err error) {
 	result = []KzMap{}
-	err = globalApiGet("maps", &result, criteria)
+	err = s.GetWithParameters("maps", criteria, &result)
 
 	return
 }
 
-func GetMapById(id int) (result *KzMap, err error) {
+func (s *MapServiceClient) GetMapById(id int) (result *KzMap, err error) {
 	result = &KzMap{}
-	err = globalApiGet("maps/"+string(id), result, nil)
+	err = s.Get("maps/"+strconv.Itoa(id), result)
 
 	return
 }
 
-func GetMapByName(mapName string) (result *KzMap, err error) {
+func (s *MapServiceClient) GetMapByName(mapName string) (result *KzMap, err error) {
 	result = &KzMap{}
-	err = globalApiGet("maps/name/"+mapName, result, nil)
+	err = s.Get("maps/name/"+mapName, result)
 
 	return
 }
