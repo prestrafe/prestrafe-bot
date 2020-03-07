@@ -34,15 +34,19 @@ func (record *Record) FormattedTime() string {
 	return fmt.Sprintf("%02d:%02d.%03d", duration/60_000, (duration%60_000)/1_000, duration%1_000)
 }
 
-func GetRecordsTop(criteria QueryParameters) (result []Record, err error) {
+type RecordServiceClient struct {
+	Client
+}
+
+func (s *RecordServiceClient) GetRecordsTop(criteria QueryParameters) (result []Record, err error) {
 	result = []Record{}
-	err = globalApiGet("records/top", &result, criteria)
+	err = s.GetWithParameters("records/top", criteria, &result)
 
 	return
 }
 
-func GetWorldRecord(mapName, mode string, stage int) (nub, pro *Record, err error) {
-	nubs, err := GetRecordsTop(QueryParameters{
+func (s *RecordServiceClient) GetWorldRecord(mapName, mode string, stage int) (nub, pro *Record, err error) {
+	nubs, err := s.GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
 		"tickrate":          "128",
@@ -50,7 +54,7 @@ func GetWorldRecord(mapName, mode string, stage int) (nub, pro *Record, err erro
 		"overall":           "true",
 		"limit":             "1",
 	})
-	pros, err := GetRecordsTop(QueryParameters{
+	pros, err := s.GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
 		"has_teleports":     "false",
@@ -70,8 +74,8 @@ func GetWorldRecord(mapName, mode string, stage int) (nub, pro *Record, err erro
 	return
 }
 
-func GetPersonalRecord(mapName, mode string, stage int, steamId64 int64) (nub, pro *Record, err error) {
-	nubs, err := GetRecordsTop(QueryParameters{
+func (s *RecordServiceClient) GetPersonalRecord(mapName, mode string, stage int, steamId64 int64) (nub, pro *Record, err error) {
+	nubs, err := s.GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
 		"steam_id":          utils.ConvertSteamId(steamId64),
@@ -79,7 +83,7 @@ func GetPersonalRecord(mapName, mode string, stage int, steamId64 int64) (nub, p
 		"stage":             strconv.Itoa(stage),
 		"limit":             "1",
 	})
-	pros, err := GetRecordsTop(QueryParameters{
+	pros, err := s.GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
 		"steam_id":          utils.ConvertSteamId(steamId64),

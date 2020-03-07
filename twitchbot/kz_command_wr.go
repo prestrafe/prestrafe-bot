@@ -8,14 +8,14 @@ import (
 	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewWRCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
+func NewWRCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("wr").
 		WithAlias("gr", "gwr", "top").
 		WithParameter("map", false, "[A-Za-z0-9_]+").
-		WithHandler(createWRHandler(gsiClient))
+		WithHandler(createWRHandler(gsiClient, apiClient))
 }
 
-func createWRHandler(gsiClient gsiclient.Client) ChatCommandHandler {
+func createWRHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
 
@@ -28,7 +28,7 @@ func createWRHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 			mapName = gsiclient.GetMapName(gameState.Map)
 		}
 
-		nub, pro, apiError := globalapi.GetWorldRecord(mapName, gsiclient.TimerMode(gameState.Player), 0)
+		nub, pro, apiError := (&globalapi.RecordServiceClient{Client: apiClient}).GetWorldRecord(mapName, gsiclient.TimerMode(gameState.Player), 0)
 
 		message = fmt.Sprintf("Global Records on %s [%s]: ", mapName, gsiclient.TimerModeName(gameState.Player))
 		if nub != nil && apiError == nil {

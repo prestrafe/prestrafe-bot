@@ -8,13 +8,13 @@ import (
 	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewMapCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
+func NewMapCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("map").
 		WithParameter("map", false, "[A-Za-z0-9_]+").
-		WithHandler(createMapHandler(gsiClient))
+		WithHandler(createMapHandler(gsiClient, apiClient))
 }
 
-func createMapHandler(gsiClient gsiclient.Client) ChatCommandHandler {
+func createMapHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
 
@@ -27,7 +27,7 @@ func createMapHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 			mapName = gsiclient.GetMapName(gameState.Map)
 		}
 
-		globalMap, apiError := globalapi.GetMapByName(mapName)
+		globalMap, apiError := (&globalapi.MapServiceClient{Client: apiClient}).GetMapByName(mapName)
 		if globalMap == nil || apiError != nil {
 			return fmt.Sprintf("Map: %s (Not global)", mapName), nil
 		} else {

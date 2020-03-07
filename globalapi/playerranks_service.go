@@ -12,14 +12,18 @@ type PlayerRank struct {
 	PlayerName string  `json:"player_name"`
 }
 
-func GetPlayerRanks(criteria QueryParameters) (result []PlayerRank, err error) {
+type PlayerRankServiceClient struct {
+	Client
+}
+
+func (s *PlayerRankServiceClient) GetPlayerRanks(criteria QueryParameters) (result []PlayerRank, err error) {
 	result = []PlayerRank{}
-	err = globalApiGet("player_ranks", &result, criteria)
+	err = s.GetWithParameters("player_ranks", criteria, &result)
 
 	return
 }
 
-func GetPlayerRank(modeId int, steamId64 int64, hasTeleports *bool) (rank *PlayerRank, err error) {
+func (s *PlayerRankServiceClient) GetPlayerRank(modeId int, steamId64 int64, hasTeleports *bool) (rank *PlayerRank, err error) {
 	teleports := ""
 	if hasTeleports != nil {
 		if *hasTeleports == true {
@@ -29,7 +33,7 @@ func GetPlayerRank(modeId int, steamId64 int64, hasTeleports *bool) (rank *Playe
 		}
 	}
 
-	ranks, err := GetPlayerRanks(QueryParameters{
+	ranks, err := s.GetPlayerRanks(QueryParameters{
 		"steamid64s":            strconv.FormatInt(steamId64, 10),
 		"has_teleports":         teleports,
 		"mode_ids":              strconv.Itoa(modeId),

@@ -8,14 +8,14 @@ import (
 	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewTierCommand(gsiClient gsiclient.Client) ChatCommandBuilder {
+func NewTierCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("tier").
 		WithAlias("difficulty").
 		WithParameter("map", false, "[A-Za-z0-9_]+").
-		WithHandler(createTierHandler(gsiClient))
+		WithHandler(createTierHandler(gsiClient, apiClient))
 }
 
-func createTierHandler(gsiClient gsiclient.Client) ChatCommandHandler {
+func createTierHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
 
@@ -28,7 +28,7 @@ func createTierHandler(gsiClient gsiclient.Client) ChatCommandHandler {
 			mapName = gsiclient.GetMapName(gameState.Map)
 		}
 
-		globalMap, apiError := globalapi.GetMapByName(mapName)
+		globalMap, apiError := (&globalapi.MapServiceClient{Client: apiClient}).GetMapByName(mapName)
 		if globalMap == nil || apiError != nil {
 			return fmt.Sprintf("%s - Tier Unknown (Not global)", mapName), nil
 		} else {
