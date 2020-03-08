@@ -11,7 +11,7 @@ import (
 func NewJumpStatCommand(gsiClient gsiclient.Client, apiClient globalapi.Client, name, jumpType, jumpName string, maxDistance int, withoutBinds bool) ChatCommandBuilder {
 	return NewChatCommandBuilder(name).
 		WithAlias(fmt.Sprintf("%spb", name), jumpType).
-		WithParameter("binds", false, "(bind|nobind)").
+		WithParameter("binds", false, "(nobind|bind)").
 		WithHandler(func(ctx CommandContext) (message string, err error) {
 			noBind := withoutBinds
 			if bindsParam, present := ctx.Parameter("noBind"); present {
