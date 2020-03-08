@@ -25,9 +25,9 @@ func NewJumpStatCommand(gsiClient gsiclient.Client, apiClient globalapi.Client, 
 
 			jumpStat, apiError := (&globalapi.JumpStatServiceClient{Client: apiClient}).GetJumpStatPersonalBest(jumpType, maxDistance, gameState.Provider.SteamId, noBind)
 			if jumpStat != nil && apiError == nil {
-				binds := "no noBind"
+				binds := "no binds"
 				if jumpStat.HasBinds() {
-					binds = "with noBind"
+					binds = "with binds"
 				}
 
 				return fmt.Sprintf("%s record of %s: %.04f units, %d strafes, %s", jumpName, ctx.Channel(), jumpStat.Distance, jumpStat.StrafeCount, binds), nil
