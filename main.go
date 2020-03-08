@@ -90,27 +90,27 @@ func createCommands(botConfig *BotConfig, channelConfig *config.ChannelConfig) [
 			Build(),
 
 		// Jump Stat commands
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "bh", "bhop", "Bunnyhop", 400).
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "bh", "bhop", "Bunnyhop", 400, channelConfig.JumpsOnlyWithoutBinds).
 			WithConfig(channelConfig.GetCommandConfig("*")).
 			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
 			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "dh", "drophop", "Drop Bunnyhop", 400).
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "dh", "drophop", "Drop Bunnyhop", 400, channelConfig.JumpsOnlyWithoutBinds).
 			WithConfig(channelConfig.GetCommandConfig("*")).
 			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
 			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "laj", "ladderjump", "Ladder Jump", 400).
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "laj", "ladderjump", "Ladder Jump", 400, channelConfig.JumpsOnlyWithoutBinds).
 			WithConfig(channelConfig.GetCommandConfig("*")).
 			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
 			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "lj", "longjump", "Long Jump", 300).
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "lj", "longjump", "Long Jump", 300, channelConfig.JumpsOnlyWithoutBinds).
 			WithConfig(channelConfig.GetCommandConfig("*")).
 			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
 			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "mbh", "multibhop", "Multi Bunnyhop", 400).
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "mbh", "multibhop", "Multi Bunnyhop", 400, channelConfig.JumpsOnlyWithoutBinds).
 			WithConfig(channelConfig.GetCommandConfig("*")).
 			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
 			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "wj", "weirdjump", "Weird Jump", 400).
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "wj", "weirdjump", "Weird Jump", 400, channelConfig.JumpsOnlyWithoutBinds).
 			WithConfig(channelConfig.GetCommandConfig("*")).
 			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
 			Build(),
