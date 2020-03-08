@@ -40,11 +40,21 @@ func (s *JumpStatServiceClient) GetJumpStats(criteria QueryParameters) (result [
 	return
 }
 
-func (s *JumpStatServiceClient) GetJumpStatPersonalBest(jumpType string, maxDistance int, steamId64 int64) (jumpStat *JumpStat, err error) {
+func (s *JumpStatServiceClient) GetJumpStatPersonalBest(jumpType string, maxDistance int, steamId64 int64, withoutBinds bool) (jumpStat *JumpStat, err error) {
+	crouchBind := ""
+	forwardBind := ""
+
+	if withoutBinds {
+		crouchBind = "false"
+		forwardBind = "false"
+	}
+
 	jumpStats, err := s.GetJumpStats(QueryParameters{
 		"jumptype":           jumpType,
 		"steam_id":           utils.ConvertSteamId(steamId64),
 		"less_than_distance": strconv.Itoa(maxDistance),
+		"is_crouch_bind":     crouchBind,
+		"is_forward_bind":    forwardBind,
 		"limit":              "25",
 	})
 
