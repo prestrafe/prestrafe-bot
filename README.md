@@ -12,9 +12,9 @@
 - `!wr (map-name)`: Displays the world record time for the main stage.
 
 # Jumpstat Commands
-- `!bh`: Displays the best bunny hop.
-- `!dh`: Displays the best drop hop.
-- `!laj`: Displays the best ladder jump.
-- `!lj`: Displays the best long jump.
-- `!mbh`: Displays the best multi bunny hop.
-- `!wj`: Displays the best weird jump.
+- `!bh (bind|nobind)`: Displays the best bunny hop.
+- `!dh (bind|nobind)`: Displays the best drop hop.
+- `!laj (bind|nobind)`: Displays the best ladder jump.
+- `!lj (bind|nobind)`: Displays the best long jump.
+- `!mbh (bind|nobind)`: Displays the best multi bunny hop.
+- `!wj (bind|nobind)`: Displays the best weird jump.
