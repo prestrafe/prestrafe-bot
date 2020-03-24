@@ -190,10 +190,6 @@ func TestCommandDetectionRegression(t *testing.T) {
 	assert.False(t, tierCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!tiers"}, abyss))
 }
 
-func TestJSCommandBindToggle(t *testing.T) {
-	NewJumpStatCommand(gsiClient, apiClient, "lj", "longjump", "Long Jump", 300, true).Build()
-}
-
 func testCommandConfig(enabled bool, subOnly bool, coolDown int) *config.ChatCommandConfig {
 	return &config.ChatCommandConfig{
 		Name:     "",
