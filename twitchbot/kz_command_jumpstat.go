@@ -14,7 +14,7 @@ func NewJumpStatCommand(gsiClient gsiclient.Client, apiClient globalapi.Client, 
 		WithParameter("binds", false, "(nobind|bind)").
 		WithHandler(func(ctx CommandContext) (message string, err error) {
 			noBind := withoutBinds
-			if bindsParam, present := ctx.Parameter("noBind"); present {
+			if bindsParam, present := ctx.Parameter("binds"); present {
 				noBind = bindsParam == "nobind"
 			}
 
