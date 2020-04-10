@@ -60,10 +60,14 @@ func GetMapName(mapState *MapState) string {
 	return mapState.Name
 }
 func TimerMode(player *PlayerState) string {
-	switch player.Clan {
-	case "SKZ":
+	return TimerModeFromName(player.Clan)
+}
+
+func TimerModeFromName(clan string) string {
+	switch strings.ToLower(clan) {
+	case "skz":
 		return "kz_simple"
-	case "VNL":
+	case "vnl":
 		return "kz_vanilla"
 	}
 
