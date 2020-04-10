@@ -63,8 +63,8 @@ func TimerMode(player *PlayerState) string {
 	return TimerModeFromName(player.Clan)
 }
 
-func TimerModeFromName(clan string) string {
-	switch strings.ToLower(clan) {
+func TimerModeFromName(name string) string {
+	switch strings.ToLower(name) {
 	case "skz":
 		return "kz_simple"
 	case "vnl":
@@ -75,7 +75,11 @@ func TimerModeFromName(clan string) string {
 }
 
 func TimerModeName(player *PlayerState) string {
-	switch player.Clan {
+	return TimerModeNameFromName(player.Clan)
+}
+
+func TimerModeNameFromName(name string) string {
+	switch name {
 	case "SKZ":
 		return "SKZ"
 	case "VNL":
