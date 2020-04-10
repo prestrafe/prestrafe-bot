@@ -79,7 +79,7 @@ func TimerModeName(player *PlayerState) string {
 }
 
 func TimerModeNameFromName(name string) string {
-	switch name {
+	switch strings.ToUpper(name) {
 	case "SKZ":
 		return "SKZ"
 	case "VNL":
