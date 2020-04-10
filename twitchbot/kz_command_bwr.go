@@ -46,7 +46,7 @@ func createBWRHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Ch
 
 		nub, pro, apiError := (&globalapi.RecordServiceClient{Client: apiClient}).GetWorldRecord(mapName, gsiclient.TimerModeFromName(modeName), bonusNumber)
 
-		message = fmt.Sprintf("Global Records on %s Bonus %d [%s]: ", mapName, bonusNumber, gsiclient.TimerModeName(gameState.Player))
+		message = fmt.Sprintf("Global Records on %s Bonus %d [%s]: ", mapName, bonusNumber, gsiclient.TimerModeNameFromName(modeName))
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP) by %s", nub.FormattedTime(), nub.Teleports, nub.PlayerName)
 		} else {

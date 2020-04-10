@@ -46,7 +46,7 @@ func createBPBHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Ch
 
 		nub, pro, apiError := (&globalapi.RecordServiceClient{Client: apiClient}).GetPersonalRecord(mapName, gsiclient.TimerModeFromName(modeName), bonusNumber, gameState.Provider.SteamId)
 
-		message = fmt.Sprintf("PB of %s on %s Bonus %d [%s]: ", ctx.Channel(), mapName, bonusNumber, gsiclient.TimerModeName(gameState.Player))
+		message = fmt.Sprintf("PB of %s on %s Bonus %d [%s]: ", ctx.Channel(), mapName, bonusNumber, gsiclient.TimerModeNameFromName(modeName))
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP) by %s", nub.FormattedTime(), nub.Teleports, nub.PlayerName)
 		} else {
