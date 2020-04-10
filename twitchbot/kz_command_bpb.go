@@ -14,6 +14,7 @@ func NewBPBCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatC
 		WithAlias("bpr").
 		WithParameter("bonus", false, "[0-9]").
 		WithParameter("map", false, "[A-Za-z0-9_]+").
+		WithParameter("mode", false, "(kzt|skz|vnl)").
 		WithHandler(createBPBHandler(gsiClient, apiClient))
 }
 
@@ -21,6 +22,7 @@ func createBPBHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Ch
 	return func(ctx CommandContext) (message string, err error) {
 		bonus, hasBonus := ctx.Parameter("bonus")
 		mapName, hasMapName := ctx.Parameter("map")
+		modeName, hasModeName := ctx.Parameter("mode")
 
 		gameState, gsiError := gsiClient.GetGameState()
 		if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
@@ -33,13 +35,16 @@ func createBPBHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Ch
 		if !hasMapName {
 			mapName = gsiclient.GetMapName(gameState.Map)
 		}
+		if !hasModeName {
+			modeName = gsiclient.TimerModeName(gameState.Player)
+		}
 
 		bonusNumber, _ := strconv.Atoi(bonus)
 		if bonusNumber < 1 {
 			return fmt.Sprintf("'%s' is not a valid bonus number.", bonus), nil
 		}
 
-		nub, pro, apiError := (&globalapi.RecordServiceClient{Client: apiClient}).GetPersonalRecord(mapName, gsiclient.TimerMode(gameState.Player), bonusNumber, gameState.Provider.SteamId)
+		nub, pro, apiError := (&globalapi.RecordServiceClient{Client: apiClient}).GetPersonalRecord(mapName, gsiclient.TimerModeFromName(modeName), bonusNumber, gameState.Provider.SteamId)
 
 		message = fmt.Sprintf("PB of %s on %s Bonus %d [%s]: ", ctx.Channel(), mapName, bonusNumber, gsiclient.TimerModeName(gameState.Player))
 		if nub != nil && apiError == nil {
