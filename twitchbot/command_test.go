@@ -190,6 +190,19 @@ func TestCommandDetectionRegression(t *testing.T) {
 	assert.False(t, tierCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!tiers"}, abyss))
 }
 
+func TestCommandDetectionWithSecondOptionalParameter(t *testing.T) {
+	wrCommand := NewChatCommandBuilder("wr").
+		WithAlias("gr", "gwr", "top").
+		WithParameter("map", false, "(kz|kzpro|skz|vnl|xc)_[A-Za-z0-9_]+").
+		WithParameter("mode", false, "(kzt|skz|vnl)").
+		build()
+
+	normalUser := &twitch.User{Badges: map[string]int{}}
+	abyss := func(format string, a ...interface{}) {}
+
+	assert.True(t, wrCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!wr skz"}, abyss))
+}
+
 func testCommandConfig(enabled bool, subOnly bool, coolDown int) *config.ChatCommandConfig {
 	return &config.ChatCommandConfig{
 		Name:     "",
