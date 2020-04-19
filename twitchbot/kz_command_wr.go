@@ -20,16 +20,18 @@ func createWRHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Cha
 		mapName, hasMapName := ctx.Parameter("map")
 		modeName, hasModeName := ctx.Parameter("mode")
 
-		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
-			return "", errors.New("could not retrieve KZ game play")
-		}
+		if !hasMapName && !hasModeName {
+			gameState, gsiError := gsiClient.GetGameState()
+			if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
+				return "", errors.New("could not retrieve KZ game play")
+			}
 
-		if !hasMapName {
-			mapName = gsiclient.GetMapName(gameState.Map)
-		}
-		if !hasModeName {
-			modeName = gsiclient.TimerModeName(gameState.Player)
+			if !hasMapName {
+				mapName = gsiclient.GetMapName(gameState.Map)
+			}
+			if !hasModeName {
+				modeName = gsiclient.TimerModeName(gameState.Player)
+			}
 		}
 
 		nub, pro, apiError := (&globalapi.RecordServiceClient{Client: apiClient}).GetWorldRecord(mapName, gsiclient.TimerModeFromName(modeName), 0)
