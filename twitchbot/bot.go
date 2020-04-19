@@ -1,9 +1,8 @@
 package twitchbot
 
 import (
+	"github.com/gempir/go-twitch-irc/v2"
 	"strings"
-
-	"github.com/gempir/go-twitch-irc"
 )
 
 // This interface defines the public API of the chat bot. The API is pretty slim, as most of the work is done
@@ -42,9 +41,9 @@ func (c chatBot) Join(channel string, commands []ChatCommand) ChatBot {
 }
 
 func (c chatBot) Start() error {
-	c.client.OnNewMessage(func(channel string, user twitch.User, message twitch.Message) {
-		if botChannel, hasChannel := c.channels[channel]; hasChannel {
-			botChannel.handle(&user, &message)
+	c.client.OnPrivateMessage(func(message twitch.PrivateMessage) {
+		if botChannel, hasChannel := c.channels[message.Channel]; hasChannel {
+			botChannel.handle(&message.User, &message)
 		}
 	})
 	return c.client.Connect()

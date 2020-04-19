@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gempir/go-twitch-irc"
+	"github.com/gempir/go-twitch-irc/v2"
 )
 
 const commandPrefix = "!"
@@ -33,7 +33,7 @@ type ChatCommand interface {
 	// Tries to handle a chat message from a chat user. If the command is able to identify that the message is handled
 	// by it, this method returns true, regardless if the command later produces an error. It returns false only if the
 	// command does not claim responsibility for the message.
-	TryHandle(channel string, user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool
+	TryHandle(channel string, user *twitch.User, message *twitch.PrivateMessage, messageSink ChatMessageSink) bool
 	// Returns a string representation of the command. This is usually the signature of the command.
 	String() string
 }
@@ -62,16 +62,16 @@ func (c *chatCommand) SubOnly() bool {
 	return c.subOnly
 }
 
-func (c *chatCommand) TryHandle(channel string, user *twitch.User, message *twitch.Message, messageSink ChatMessageSink) bool {
+func (c *chatCommand) TryHandle(channel string, user *twitch.User, message *twitch.PrivateMessage, messageSink ChatMessageSink) bool {
 	if !c.enabled {
 		return false
 	}
 
-	if !c.matchesPrefix(message.Text) {
+	if !c.matchesPrefix(message.Message) {
 		return false
 	}
 
-	if !c.pattern.MatchString(message.Text) {
+	if !c.pattern.MatchString(message.Message) {
 		messageSink("Your message did not matched the usage of the command: %s", c)
 		return true
 	}
@@ -86,7 +86,7 @@ func (c *chatCommand) TryHandle(channel string, user *twitch.User, message *twit
 		return true
 	}
 
-	output, err := c.handler(&commandContext{channel, c.parseParameters(message.Text)})
+	output, err := c.handler(&commandContext{channel, c.parseParameters(message.Message)})
 	if err != nil {
 		messageSink(err.Error())
 	} else {
