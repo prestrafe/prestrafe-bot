@@ -24,19 +24,22 @@ func createBWRHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Ch
 		mapName, hasMapName := ctx.Parameter("map")
 		modeName, hasModeName := ctx.Parameter("mode")
 
-		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
-			return "", errors.New("could not retrieve KZ game play")
+		if !hasMapName && !hasModeName {
+			gameState, gsiError := gsiClient.GetGameState()
+			if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
+				return "", errors.New("could not retrieve KZ game play")
+			}
+
+			if !hasMapName {
+				mapName = gsiclient.GetMapName(gameState.Map)
+			}
+			if !hasModeName {
+				modeName = gsiclient.TimerModeName(gameState.Player)
+			}
 		}
 
 		if !hasBonus {
 			bonus = "1"
-		}
-		if !hasMapName {
-			mapName = gsiclient.GetMapName(gameState.Map)
-		}
-		if !hasModeName {
-			modeName = gsiclient.TimerModeName(gameState.Player)
 		}
 
 		bonusNumber, _ := strconv.Atoi(bonus)

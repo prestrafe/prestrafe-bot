@@ -17,10 +17,13 @@ func NewMapCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatC
 func createMapHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
 		mapName, hasMapName := ctx.Parameter("map")
+		modeName := "kz_timer"
 
 		gameState, gsiError := gsiClient.GetGameState()
-		if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
+		if !hasMapName && (gsiError != nil || !gsiclient.IsKZGameState(gameState)) {
 			return "", errors.New("could not retrieve KZ game play")
+		} else {
+			modeName = gsiclient.TimerMode(gameState.Player)
 		}
 
 		if !hasMapName {
@@ -31,7 +34,7 @@ func createMapHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Ch
 		if globalMap == nil || apiError != nil {
 			return fmt.Sprintf("Map: %s (Not global)", mapName), nil
 		} else {
-			return fmt.Sprintf("Map: %s (T%d) - https://gokzstats.com/?map=%s&mode=%s", mapName, globalMap.Difficulty, mapName, gsiclient.TimerMode(gameState.Player)), nil
+			return fmt.Sprintf("Map: %s (T%d) - https://gokzstats.com/?map=%s&mode=%s", mapName, globalMap.Difficulty, mapName, modeName), nil
 		}
 	}
 }
