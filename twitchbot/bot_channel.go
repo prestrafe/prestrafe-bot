@@ -2,10 +2,14 @@ package twitchbot
 
 import (
 	"fmt"
+	"gitlab.com/prestrafe/prestrafe-bot/utils"
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v2"
 )
+
+// Buffer sending messages, to avoid spamming twitch and getting banned :(
+var messageQueue = utils.CreateTaskQueue(20, 30)
 
 type botChannel struct {
 	name        string
@@ -18,7 +22,9 @@ func newChannel(channelName string, client *twitch.Client, commands []ChatComman
 		channelName,
 		commands,
 		func(format string, a ...interface{}) {
-			client.Say(strings.ToLower(channelName), fmt.Sprintf(format, a...))
+			messageQueue.ScheduleTask(func() {
+				client.Say(strings.ToLower(channelName), fmt.Sprintf(format, a...))
+			})
 		},
 	}
 }
