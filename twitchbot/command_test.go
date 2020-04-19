@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gempir/go-twitch-irc"
+	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/stretchr/testify/assert"
 
 	"gitlab.com/prestrafe/prestrafe-bot/config"
@@ -158,24 +158,24 @@ func TestTryHandle(t *testing.T) {
 	normalUser := &twitch.User{Badges: map[string]int{}}
 	abyss := func(format string, a ...interface{}) {}
 
-	assert.False(t, enabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: ""}, abyss))
-	assert.False(t, enabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!other"}, abyss))
-	assert.False(t, enabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!other 42"}, abyss))
+	assert.False(t, enabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: ""}, abyss))
+	assert.False(t, enabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!other"}, abyss))
+	assert.False(t, enabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!other 42"}, abyss))
 
-	assert.True(t, enabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!name"}, abyss))
-	assert.True(t, enabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!name 42"}, abyss))
+	assert.True(t, enabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!name"}, abyss))
+	assert.True(t, enabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!name 42"}, abyss))
 
 	disabledCommand := NewChatCommandBuilder("name").
 		WithParameter("param", true, "[0-9]+").
 		WithEnabled(false).
 		build()
 
-	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: ""}, abyss))
-	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!other"}, abyss))
-	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!other 42"}, abyss))
+	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: ""}, abyss))
+	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!other"}, abyss))
+	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!other 42"}, abyss))
 
-	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!name"}, abyss))
-	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!name 42"}, abyss))
+	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!name"}, abyss))
+	assert.False(t, disabledCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!name 42"}, abyss))
 }
 
 func TestCommandDetectionRegression(t *testing.T) {
@@ -185,9 +185,9 @@ func TestCommandDetectionRegression(t *testing.T) {
 	normalUser := &twitch.User{Badges: map[string]int{}}
 	abyss := func(format string, a ...interface{}) {}
 
-	assert.False(t, mapCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!mapcomp"}, abyss))
-	assert.False(t, pbCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!prestrafebot"}, abyss))
-	assert.False(t, tierCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!tiers"}, abyss))
+	assert.False(t, mapCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!mapcomp"}, abyss))
+	assert.False(t, pbCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!prestrafebot"}, abyss))
+	assert.False(t, tierCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!tiers"}, abyss))
 }
 
 func TestCommandDetectionWithSecondOptionalParameter(t *testing.T) {
@@ -200,7 +200,7 @@ func TestCommandDetectionWithSecondOptionalParameter(t *testing.T) {
 	normalUser := &twitch.User{Badges: map[string]int{}}
 	abyss := func(format string, a ...interface{}) {}
 
-	assert.True(t, wrCommand.TryHandle("chan", normalUser, &twitch.Message{Text: "!wr skz"}, abyss))
+	assert.True(t, wrCommand.TryHandle("chan", normalUser, &twitch.PrivateMessage{Message: "!wr skz"}, abyss))
 }
 
 func testCommandConfig(enabled bool, subOnly bool, coolDown int) *config.ChatCommandConfig {

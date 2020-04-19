@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gempir/go-twitch-irc"
+	"github.com/gempir/go-twitch-irc/v2"
 )
 
 type botChannel struct {
@@ -23,7 +23,7 @@ func newChannel(channelName string, client *twitch.Client, commands []ChatComman
 	}
 }
 
-func (c *botChannel) handle(user *twitch.User, message *twitch.Message) {
+func (c *botChannel) handle(user *twitch.User, message *twitch.PrivateMessage) {
 	for _, command := range c.commands {
 		if command.TryHandle(c.name, user, message, c.channelSink) {
 			return
