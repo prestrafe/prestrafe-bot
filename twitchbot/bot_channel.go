@@ -8,19 +8,21 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 )
 
-// Buffer sending messages, to avoid spamming twitch and getting banned :(
-var messageQueue = utils.CreateTaskQueue(20, 30)
-
 type botChannel struct {
-	name        string
-	commands    []ChatCommand
-	channelSink ChatMessageSink
+	name         string
+	commands     []ChatCommand
+	messageQueue *utils.TaskQueue
+	channelSink  ChatMessageSink
 }
 
 func newChannel(channelName string, client *twitch.Client, commands []ChatCommand) *botChannel {
+	// Buffer sending messages, to avoid spamming twitch and getting banned :(
+	var messageQueue = utils.CreateTaskQueue(20, 30)
+
 	return &botChannel{
 		channelName,
 		commands,
+		messageQueue,
 		func(format string, a ...interface{}) {
 			messageQueue.ScheduleTask(func() {
 				client.Say(strings.ToLower(channelName), fmt.Sprintf(format, a...))
