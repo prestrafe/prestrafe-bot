@@ -114,6 +114,14 @@ func createCommands(botConfig *BotConfig, channelConfig *config.ChannelConfig) [
 			WithConfig(channelConfig.GetCommandConfig("*")).
 			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
 			Build(),
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "lbh", "lbh", "Lowpre Bunnyhop", 400, channelConfig.JumpsOnlyWithoutBinds).
+			WithConfig(channelConfig.GetCommandConfig("*")).
+			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
+			Build(),
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "lwj", "lwj", "Lowpre Weird Jump", 400, channelConfig.JumpsOnlyWithoutBinds).
+			WithConfig(channelConfig.GetCommandConfig("*")).
+			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
+			Build(),
 	}
 
 	commands = append(commands, twitchbot.NewHelpCommand(commands).
