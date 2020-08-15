@@ -15,6 +15,8 @@
 - `!bh (bind|nobind)`: Displays the best bunny hop.
 - `!dh (bind|nobind)`: Displays the best drop hop.
 - `!laj (bind|nobind)`: Displays the best ladder jump.
+- `!lbh (bind|nobind)`: Displays the best lowpre bunny hop.
 - `!lj (bind|nobind)`: Displays the best long jump.
+- `!lwj (bind|nobind)`: Displays the best lowpre weird jump.
 - `!mbh (bind|nobind)`: Displays the best multi bunny hop.
 - `!wj (bind|nobind)`: Displays the best weird jump.
