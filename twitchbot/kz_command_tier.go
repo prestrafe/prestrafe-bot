@@ -50,6 +50,8 @@ func convertDifficultyToTier(difficulty int) string {
 	case 5:
 		return "Very Hard"
 	case 6:
+		return "Extreme"
+	case 7:
 		return "Death"
 	}
 
