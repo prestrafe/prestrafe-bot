@@ -56,8 +56,8 @@ func (c *client) GetWithParameters(path string, queryParams QueryParameters, res
 		return restErr
 	}
 
+	c.logger.Printf("%s -> Status: %d, Body: %s\n", response.Request.URL, response.StatusCode(), response.Body())
 	if response.StatusCode() != 200 {
-		c.logger.Printf("%s -> Status: %d, Body: %s\n", apiEndpoint, response.StatusCode(), response.Body())
 		return errors.New(fmt.Sprintf("Expected status '%d' but got '%d'", 200, response.StatusCode()))
 	}
 
