@@ -20,7 +20,7 @@ func createWRHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Cha
 		mapName, hasMapName := ctx.Parameter("map")
 		modeName, hasModeName := ctx.Parameter("mode")
 
-		if !hasMapName && !hasModeName {
+		if !hasMapName || !hasModeName {
 			gameState, gsiError := gsiClient.GetGameState()
 			if gsiError != nil || !gsiclient.IsKZGameState(gameState) {
 				return "", errors.New("could not retrieve KZ game play")
