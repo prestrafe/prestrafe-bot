@@ -48,16 +48,18 @@ func IsKZGameState(gameState *GameState) bool {
 		return false
 	}
 
-	matchString, err := regexp.MatchString("^(workshop/[0-9]+/)?(kz|kzpro|skz|vnl|xc)_.+$", gameState.Map.Name)
+	mapName := strings.ToLower(gameState.Map.Name)
+	matchString, err := regexp.MatchString("^(workshop/[0-9]+/)?(kz|kzpro|skz|vnl|xc)_.+$", mapName)
 	return matchString && err == nil
 }
 
 func GetMapName(mapState *MapState) string {
-	if strings.HasPrefix(mapState.Name, "workshop") {
-		return mapState.Name[strings.LastIndex(mapState.Name, "/")+1:]
+	mapName := strings.ToLower(mapState.Name)
+	if strings.HasPrefix(mapName, "workshop") {
+		return mapName[strings.LastIndex(mapName, "/")+1:]
 	}
 
-	return mapState.Name
+	return mapName
 }
 func TimerMode(player *PlayerState) string {
 	return TimerModeFromName(player.Clan)
