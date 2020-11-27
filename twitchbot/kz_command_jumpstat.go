@@ -8,12 +8,12 @@ import (
 	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
 )
 
-func NewJumpStatCommand(gsiClient gsiclient.Client, apiClient globalapi.Client, name, jumpType, jumpName string, maxDistance int, withoutBinds bool) ChatCommandBuilder {
+func NewJumpStatCommand(gsiClient gsiclient.Client, apiClient globalapi.Client, name, jumpType, jumpName string, maxDistance int) ChatCommandBuilder {
 	return NewChatCommandBuilder(name).
 		WithAlias(fmt.Sprintf("%spb", name), jumpType).
 		WithParameter("binds", false, "(nobind|bind)").
 		WithHandler(func(ctx CommandContext) (message string, err error) {
-			noBind := withoutBinds
+			noBind := true
 			if bindsParam, present := ctx.Parameter("binds"); present {
 				noBind = bindsParam == "nobind"
 			}

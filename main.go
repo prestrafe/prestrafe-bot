@@ -42,85 +42,33 @@ func createCommands(botConfig *BotConfig, channelConfig *config.ChannelConfig) [
 
 	commands := []twitchbot.ChatCommand{
 		// Troll commands
-		twitchbot.NewGlobalCheckCommand().
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("globalcheck")).
-			Build(),
+		twitchbot.NewGlobalCheckCommand().Build(),
 
 		// Map information commands
-		twitchbot.NewMapCommand(gsiClient, apiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("map")).
-			Build(),
-		twitchbot.NewTierCommand(gsiClient, apiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("tier")).
-			Build(),
+		twitchbot.NewMapCommand(gsiClient, apiClient).Build(),
+		twitchbot.NewTierCommand(gsiClient, apiClient).Build(),
 
 		// Player commands
-		twitchbot.NewModeCommand(gsiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("mode")).
-			Build(),
-		twitchbot.NewRankCommand(gsiClient, apiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("rank")).
-			Build(),
-		twitchbot.NewStatsCommand(gsiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("stats")).
-			Build(),
+		twitchbot.NewModeCommand(gsiClient).Build(),
+		twitchbot.NewRankCommand(gsiClient, apiClient).Build(),
+		twitchbot.NewStatsCommand(gsiClient).Build(),
 
 		// Record time commands
-		twitchbot.NewWRCommand(gsiClient, apiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("wr")).
-			Build(),
-		twitchbot.NewBWRCommand(gsiClient, apiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("wr")).
-			Build(),
-		twitchbot.NewPBCommand(gsiClient, apiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("pb")).
-			Build(),
-		twitchbot.NewBPBCommand(gsiClient, apiClient).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("pb")).
-			Build(),
+		twitchbot.NewWRCommand(gsiClient, apiClient).Build(),
+		twitchbot.NewBWRCommand(gsiClient, apiClient).Build(),
+		twitchbot.NewPBCommand(gsiClient, apiClient).Build(),
+		twitchbot.NewBPBCommand(gsiClient, apiClient).Build(),
 
 		// Jump Stat commands
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "bh", "bhop", "Bunnyhop", 400, channelConfig.JumpsOnlyWithoutBinds).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
-			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "dh", "drophop", "Drop Bunnyhop", 400, channelConfig.JumpsOnlyWithoutBinds).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
-			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "laj", "ladderjump", "Ladder Jump", 400, channelConfig.JumpsOnlyWithoutBinds).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
-			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "lj", "longjump", "Long Jump", 300, channelConfig.JumpsOnlyWithoutBinds).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
-			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "mbh", "multibhop", "Multi Bunnyhop", 400, channelConfig.JumpsOnlyWithoutBinds).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
-			Build(),
-		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "wj", "weirdjump", "Weird Jump", 400, channelConfig.JumpsOnlyWithoutBinds).
-			WithConfig(channelConfig.GetCommandConfig("*")).
-			WithConfig(channelConfig.GetCommandConfig("jumpstat")).
-			Build(),
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "bh", "bhop", "Bunnyhop", 400).Build(),
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "dh", "drophop", "Drop Bunnyhop", 400).Build(),
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "laj", "ladderjump", "Ladder Jump", 400).Build(),
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "lj", "longjump", "Long Jump", 300).Build(),
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "mbh", "multibhop", "Multi Bunnyhop", 400).Build(),
+		twitchbot.NewJumpStatCommand(gsiClient, apiClient, "wj", "weirdjump", "Weird Jump", 400).Build(),
 	}
 
-	commands = append(commands, twitchbot.NewHelpCommand(commands).
-		WithConfig(channelConfig.GetCommandConfig("*")).
-		WithConfig(channelConfig.GetCommandConfig("help")).
-		Build(),
-	)
+	commands = append(commands, twitchbot.NewHelpCommand(commands).Build())
 
 	return commands
 }

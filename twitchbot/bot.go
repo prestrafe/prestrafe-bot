@@ -43,7 +43,7 @@ func (c chatBot) Join(channel string, commands []ChatCommand) ChatBot {
 func (c chatBot) Start() error {
 	c.client.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		if botChannel, hasChannel := c.channels[message.Channel]; hasChannel {
-			botChannel.handle(&message.User, &message)
+			botChannel.handle(&message)
 		}
 	})
 	return c.client.Connect()

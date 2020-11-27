@@ -12,15 +12,7 @@ func NewHelpCommand(commands []ChatCommand) ChatCommandBuilder {
 			commandStrings := make([]string, 0)
 
 			for _, command := range commands {
-				if command.Enabled() {
-					commandHelp := commandPrefix + command.Name()
-
-					if command.SubOnly() {
-						commandHelp += " (sub only)"
-					}
-
-					commandStrings = append(commandStrings, commandHelp)
-				}
+				commandStrings = append(commandStrings, commandPrefix+command.Name())
 			}
 
 			sort.Strings(commandStrings)
