@@ -12,7 +12,7 @@ import (
 
 const (
 	apiEndpointBase = "https://kztimerglobal.com/api"
-	apiVersion      = "1.0"
+	apiVersion      = "2.0"
 )
 
 // A type definition for query parameter maps. These can be passed to many methods of the global API to specify which
