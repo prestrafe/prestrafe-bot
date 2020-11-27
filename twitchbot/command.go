@@ -9,7 +9,10 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 )
 
-const commandPrefix = "!"
+const (
+	commandPrefix = "!"
+	coolDown      = 15 * time.Second
+)
 
 // Defines function signatures that can handle chat commands.
 // They get passed a the parameters that were passed to the command by the author.
@@ -26,14 +29,10 @@ type ChatMessageSink func(format string, a ...interface{})
 type ChatCommand interface {
 	// Returns the name of the command.
 	Name() string
-	// Returns true if the command is enabled, false otherwise.
-	Enabled() bool
-	// Returns true if the command is only available to subscribers, false otherwise.
-	SubOnly() bool
 	// Tries to handle a chat message from a chat user. If the command is able to identify that the message is handled
 	// by it, this method returns true, regardless if the command later produces an error. It returns false only if the
 	// command does not claim responsibility for the message.
-	TryHandle(channel string, user *twitch.User, message *twitch.PrivateMessage, messageSink ChatMessageSink) bool
+	TryHandle(channel string, message *twitch.PrivateMessage, messageSink ChatMessageSink) bool
 	// Returns a string representation of the command. This is usually the signature of the command.
 	String() string
 }
@@ -42,9 +41,6 @@ type chatCommand struct {
 	name          string
 	aliases       []string
 	parameters    []chatCommandParameter
-	enabled       bool
-	subOnly       bool
-	coolDown      time.Duration
 	handler       ChatCommandHandler
 	pattern       *regexp.Regexp
 	lastExecution time.Time
@@ -54,19 +50,7 @@ func (c *chatCommand) Name() string {
 	return c.name
 }
 
-func (c *chatCommand) Enabled() bool {
-	return c.enabled
-}
-
-func (c *chatCommand) SubOnly() bool {
-	return c.subOnly
-}
-
-func (c *chatCommand) TryHandle(channel string, user *twitch.User, message *twitch.PrivateMessage, messageSink ChatMessageSink) bool {
-	if !c.enabled {
-		return false
-	}
-
+func (c *chatCommand) TryHandle(channel string, message *twitch.PrivateMessage, messageSink ChatMessageSink) bool {
 	if !c.matchesPrefix(message.Message) {
 		return false
 	}
@@ -76,13 +60,8 @@ func (c *chatCommand) TryHandle(channel string, user *twitch.User, message *twit
 		return true
 	}
 
-	if !c.canExecute(user) {
-		messageSink("This command is only available to subscribers, moderators and broadcasters.")
-		return true
-	}
-
 	if c.isOnCoolDown() {
-		messageSink("This command has a cool down of %.0f seconds. Please try again later.", c.coolDown.Seconds())
+		messageSink("This command has a cool down of %.0f seconds. Please try again later.", coolDown.Seconds())
 		return true
 	}
 
@@ -119,16 +98,8 @@ func (c *chatCommand) matchesPrefix(message string) bool {
 	return matchString
 }
 
-func (c *chatCommand) canExecute(user *twitch.User) bool {
-	_, sub := user.Badges["subscriber"]
-	_, mod := user.Badges["moderator"]
-	_, broadcaster := user.Badges["broadcaster"]
-
-	return sub || mod || broadcaster || !c.subOnly
-}
-
 func (c *chatCommand) isOnCoolDown() bool {
-	return c.lastExecution.After(time.Now().Add(-c.coolDown))
+	return c.lastExecution.After(time.Now().Add(-coolDown))
 }
 
 func (c *chatCommand) parseParameters(message string) map[string]string {
