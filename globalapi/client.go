@@ -29,15 +29,26 @@ type Client interface {
 }
 
 type client struct {
-	baseUrl  string
-	version  string
-	apiToken string
-	logger   *log.Logger
+	baseUrl string
+	rest    *resty.Client
+	logger  *log.Logger
 }
 
 func NewClient(apiToken string) Client {
 	logger := log.New(os.Stdout, "Global API > ", log.LstdFlags)
-	return &client{apiEndpointBase, apiVersion, apiToken, logger}
+
+	restClient := resty.New().
+		SetHeader("Accept", "application/json").
+		SetHeader("Content-Type", "application/json")
+	if apiToken != "" {
+		restClient.SetHeader("X-ApiKey", apiToken)
+	}
+
+	return &client{
+		fmt.Sprintf("%s/v%s", apiEndpointBase, apiVersion),
+		restClient,
+		logger,
+	}
 }
 
 func (c *client) Get(path string, result interface{}) error {
@@ -45,12 +56,10 @@ func (c *client) Get(path string, result interface{}) error {
 }
 
 func (c *client) GetWithParameters(path string, queryParams QueryParameters, result interface{}) error {
-	apiEndpoint := fmt.Sprintf("%s/v%s/%s", c.baseUrl, c.version, path)
-
 	response, restErr := resty.New().
 		R().
 		SetQueryParams(queryParams).
-		Get(apiEndpoint)
+		Get(fmt.Sprintf("%s/%s", c.baseUrl, path))
 
 	if restErr != nil {
 		return restErr
