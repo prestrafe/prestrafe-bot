@@ -10,7 +10,7 @@ type KzMap struct {
 	Difficulty          int    `json:"difficulty"`
 	CreatedOn           string `json:"created_on"`
 	UpdatedOn           string `json:"updated_on"`
-	ApprovedBySteamId64 int64  `json:"approved_by_steamid64"`
+	ApprovedBySteamId64 string `json:"approved_by_steamid64"`
 	WorkshopUrl         string `json:"workshop_url"`
 	DownloadUrl         string `json:"download_url"`
 }
