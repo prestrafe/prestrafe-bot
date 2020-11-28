@@ -11,6 +11,8 @@ type KzMap struct {
 	CreatedOn           string `json:"created_on"`
 	UpdatedOn           string `json:"updated_on"`
 	ApprovedBySteamId64 int64  `json:"approved_by_steamid64"`
+	WorkshopUrl         string `json:"workshop_url"`
+	DownloadUrl         string `json:"download_url"`
 }
 
 type MapServiceClient struct {
