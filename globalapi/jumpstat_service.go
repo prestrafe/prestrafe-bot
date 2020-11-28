@@ -9,7 +9,7 @@ import (
 type JumpStat struct {
 	Id            int     `json:"id"`
 	ServerId      int     `json:"server_id"`
-	SteamId64     int64   `json:"steamid64"`
+	SteamId64     string  `json:"steamid64"`
 	PlayerName    string  `json:"player_name"`
 	SteamId       string  `json:"steam_id"`
 	JumpType      int     `json:"jump_type"`

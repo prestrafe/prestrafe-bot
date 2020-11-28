@@ -9,7 +9,7 @@ import (
 
 type Record struct {
 	Id             int32   `json:"id"`
-	SteamId64      int64   `json:"steamid64"`
+	SteamId64      string  `json:"steamid64"`
 	PlayerName     string  `json:"player_name"`
 	SteamId        string  `json:"steam_id"`
 	ServerId       int32   `json:"server_id"`

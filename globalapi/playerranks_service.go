@@ -7,7 +7,7 @@ type PlayerRank struct {
 	Average    float64 `json:"average"`
 	Rating     float64 `json:"rating"`
 	Finishes   int     `json:"finishes"`
-	SteamId64  int64   `json:"steamid64,string"`
+	SteamId64  string  `json:"steamid64,string"`
 	SteamId    string  `json:"steamid"`
 	PlayerName string  `json:"player_name"`
 }
