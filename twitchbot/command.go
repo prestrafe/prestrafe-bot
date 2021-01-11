@@ -12,6 +12,9 @@ import (
 const (
 	commandPrefix = "!"
 	coolDown      = 15 * time.Second
+
+	mapRegexPattern  = "(bkz|kz|kzpro|skz|vnl|xc)_[A-Za-z0-9_]+"
+	modeRegexPattern = "(kzt|skz|vnl)"
 )
 
 // Defines function signatures that can handle chat commands.
