@@ -11,7 +11,7 @@ import (
 func NewTierCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("tier").
 		WithAlias("difficulty").
-		WithParameter("map", false, "(kz|kzpro|skz|vnl|xc)_[A-Za-z0-9_]+").
+		WithParameter("map", false, mapRegexPattern).
 		WithHandler(createTierHandler(gsiClient, apiClient))
 }
 

@@ -10,8 +10,8 @@ import (
 func NewWRCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandBuilder {
 	return NewChatCommandBuilder("wr").
 		WithAlias("gr", "gwr", "top").
-		WithParameter("map", false, "(kz|kzpro|skz|vnl|xc)_[A-Za-z0-9_]+").
-		WithParameter("mode", false, "(kzt|skz|vnl)").
+		WithParameter("map", false, mapRegexPattern).
+		WithParameter("mode", false, modeRegexPattern).
 		WithHandler(createWRHandler(gsiClient, apiClient))
 }
 

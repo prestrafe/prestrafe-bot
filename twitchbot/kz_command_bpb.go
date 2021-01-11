@@ -13,8 +13,8 @@ func NewBPBCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatC
 	return NewChatCommandBuilder("bpb").
 		WithAlias("bpr").
 		WithParameter("bonus", false, "[0-9]").
-		WithParameter("map", false, "(kz|kzpro|skz|vnl|xc)_[A-Za-z0-9_]+").
-		WithParameter("mode", false, "(kzt|skz|vnl)").
+		WithParameter("map", false, mapRegexPattern).
+		WithParameter("mode", false, modeRegexPattern).
 		WithHandler(createBPBHandler(gsiClient, apiClient))
 }
 

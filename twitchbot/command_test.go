@@ -127,10 +127,32 @@ func TestCommandDetectionRegression(t *testing.T) {
 func TestCommandDetectionWithSecondOptionalParameter(t *testing.T) {
 	wrCommand := NewChatCommandBuilder("wr").
 		WithAlias("gr", "gwr", "top").
-		WithParameter("map", false, "(kz|kzpro|skz|vnl|xc)_[A-Za-z0-9_]+").
-		WithParameter("mode", false, "(kzt|skz|vnl)").
+		WithParameter("map", false, mapRegexPattern).
+		WithParameter("mode", false, modeRegexPattern).
 		build()
 	abyss := func(format string, a ...interface{}) {}
 
 	assert.True(t, wrCommand.TryHandle("chan", &twitch.PrivateMessage{Message: "!wr skz"}, abyss))
+}
+
+func TestCommandDetectionWithBkzMap(t *testing.T) {
+	wrCommand := NewChatCommandBuilder("wr").
+		WithAlias("gr", "gwr", "top").
+		WithParameter("map", false, mapRegexPattern).
+		WithParameter("mode", false, modeRegexPattern).
+		WithHandler(func(ctx CommandContext) (msg string, err error) {
+			mapValue, mapPresent := ctx.Parameter("map")
+			assert.True(t, mapPresent)
+			assert.Equal(t, "bkz_goldbhop_csgo", mapValue)
+
+			modeValue, modePresent := ctx.Parameter("mode")
+			assert.True(t, modePresent)
+			assert.Equal(t, "kzt", modeValue)
+
+			return "", nil
+		}).
+		build()
+	abyss := func(format string, a ...interface{}) {}
+
+	assert.True(t, wrCommand.TryHandle("chan", &twitch.PrivateMessage{Message: "!wr bkz_goldbhop_csgo kzt"}, abyss))
 }

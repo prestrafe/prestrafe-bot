@@ -49,7 +49,7 @@ func IsKZGameState(gameState *GameState) bool {
 	}
 
 	mapName := strings.ToLower(gameState.Map.Name)
-	matchString, err := regexp.MatchString("^(workshop/[0-9]+/)?(kz|kzpro|skz|vnl|xc)_.+$", mapName)
+	matchString, err := regexp.MatchString("^(workshop/[0-9]+/)?(bkz|kz|kzpro|skz|vnl|xc)_.+$", mapName)
 	return matchString && err == nil
 }
 
