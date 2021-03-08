@@ -12,7 +12,7 @@ spec:
         app: prestrafe-bot
     spec:
       containers:
-        - name: gsi
+        - name: bot
           image: prestrafe-bot
           env:
             - name: BOT_CONFIGDIR
