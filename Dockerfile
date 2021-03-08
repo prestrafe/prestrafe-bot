@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go mod download
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o run .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/run .
 
 # Add the execution user
 RUN adduser -S -D -H -h /app execuser
