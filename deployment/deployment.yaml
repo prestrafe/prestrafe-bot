@@ -34,7 +34,7 @@ spec:
                   name: prestrafe-bot
                   key: twitch-api-token
           volumeMounts:
-            - name: config
+            - name: bot-config
               mountPath: /app
           ports:
             - name: http-metrics
@@ -48,4 +48,4 @@ spec:
               - key: config.yml
                 path: config.yml
       imagePullSecrets:
-        - name: prestrafe-imagepull-secret
+        - name: prestrafe-bot-imagepull-secret
