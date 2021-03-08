@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prestrafe-bot
+  labels:
+    release: monitoring
+spec:
+  endpoints:
+    - honorLabels: true
+      targetPort: http-metrics
+  selector:
+    matchLabels:
+      app: prestrafe-bot
