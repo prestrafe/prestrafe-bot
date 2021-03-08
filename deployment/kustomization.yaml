@@ -4,7 +4,7 @@ kind: Kustomization
 images:
 - name: prestrafe-bot
   newName: registry.gitlab.com/prestrafe-twitchbot/prestrafe-bot
-  newTag: bdfa7eca
+  newTag: cbbf3810
 
 resources:
 - imagepullsecret-sealed.yaml
