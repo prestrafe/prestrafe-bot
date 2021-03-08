@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prestrafe-bot
+spec:
+  selector:
+    matchLabels:
+      app: prestrafe-bot
+  template:
+    metadata:
+      labels:
+        app: prestrafe-bot
+    spec:
+      containers:
+        - name: gsi
+          image: prestrafe-bot
+          env:
+            - name: BOT_GSIADDR
+              value: prestrafe-gsi.prestrafe.cluster.svc
+            - name: BOT_GSIPORT
+              value: "8080"
+            - name: BOT_METRICSPORT
+              value: "9080"
+            - name: BOT_TWITCHUSERNAME
+              value: prestrafebot
+            - name: BOT_GLOBALAPITOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: prestrafe-bot
+                  key: global-api-token
+            - name: BOT_TWITCHAPITOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: prestrafe-bot
+                  key: twitch-api-token
+          volumeMounts:
+            - name: config
+              mountPath: /app
+          ports:
+            - name: http-metrics
+              containerPort: 9080
+              protocol: TCP
+      volumes:
+        - name: bot-config
+          secret:
+            secretName: prestrafe-bot
+            items:
+              - key: config.yml
+                path: config.yml
+      imagePullSecrets:
+        - name: prestrafe-imagepull-secret
