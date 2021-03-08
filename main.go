@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/kelseyhightower/envconfig"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"gitlab.com/prestrafe/prestrafe-bot/config"
 	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
@@ -13,6 +17,7 @@ type BotConfig struct {
 	GlobalApiToken string `required:"true"`
 	GsiAddr        string `required:"true"`
 	GsiPort        int    `required:"true"`
+	MetricsPort    int    `required:"true"`
 	TwitchUsername string `required:"true"`
 	TwitchApiToken string `required:"true"`
 }
@@ -20,6 +25,11 @@ type BotConfig struct {
 func main() {
 	botConfig := new(BotConfig)
 	envconfig.MustProcess("bot", botConfig)
+
+	http.Handle("/metrics", promhttp.Handler())
+	go func() {
+		_ = http.ListenAndServe(fmt.Sprintf(":%d", botConfig.MetricsPort), nil)
+	}()
 
 	channelsConfig, configErr := config.ReadConfig("config.yml")
 	if configErr != nil {
