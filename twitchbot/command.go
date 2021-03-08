@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 const (
@@ -15,6 +17,15 @@ const (
 
 	mapRegexPattern  = "(bkz|kz|kzpro|skz|vnl|xc)_[A-Za-z0-9_]+"
 	modeRegexPattern = "(kzt|skz|vnl)"
+)
+
+var (
+	commandCounter = promauto.NewCounterVec(prometheus.CounterOpts{
+		Namespace: "prestrafe",
+		Subsystem: "bot",
+		Name:      "commands",
+		Help:      "Tracks the commands that were used on the bot",
+	}, []string{"channel", "command"})
 )
 
 // Defines function signatures that can handle chat commands.
@@ -69,6 +80,7 @@ func (c *chatCommand) TryHandle(channel string, message *twitch.PrivateMessage, 
 	}
 
 	output, err := c.handler(&commandContext{channel, c.parseParameters(message.Message)})
+	commandCounter.WithLabelValues(channel, c.Name()).Inc()
 	if err != nil {
 		messageSink(err.Error())
 	} else {
