@@ -14,4 +14,4 @@ RUN adduser -S -D -H -h /app execuser
 USER execuser
 
 # Run the application
-CMD ["./run"]
+CMD ["/app/run"]
