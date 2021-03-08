@@ -18,7 +18,7 @@ spec:
             - name: BOT_CONFIGDIR
               value: /config
             - name: BOT_GSIADDR
-              value: prestrafe-gsi.prestrafe.cluster.svc
+              value: prestrafe-gsi.prestrafe.svc.cluster.local
             - name: BOT_GSIPORT
               value: "8080"
             - name: BOT_METRICSPORT
