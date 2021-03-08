@@ -1,4 +1,5 @@
-# Supported commands
+## Supported commands
+
 - `!bpb (bonus-number) (map-name)`: Displays the personal best time for the bonus stage.
 - `!bwr (bonus-number) (map-name)`: Displays the world record time for the bonus stage.
 - `!globalcheck`: Yes
@@ -11,7 +12,8 @@
 - `!tier (map-name)`: Display the difficulty level for the map.
 - `!wr (map-name)`: Displays the world record time for the main stage.
 
-# Jumpstat Commands
+## Jumpstat Commands
+
 - `!bh (bind|nobind)`: Displays the best bunny hop.
 - `!dh (bind|nobind)`: Displays the best drop hop.
 - `!laj (bind|nobind)`: Displays the best ladder jump.
