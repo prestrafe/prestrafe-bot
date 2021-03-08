@@ -20,6 +20,7 @@ type BotConfig struct {
 	MetricsPort    int    `required:"true"`
 	TwitchUsername string `required:"true"`
 	TwitchApiToken string `required:"true"`
+	ConfigDir      string `default:""`
 }
 
 func main() {
@@ -31,7 +32,7 @@ func main() {
 		_ = http.ListenAndServe(fmt.Sprintf(":%d", botConfig.MetricsPort), nil)
 	}()
 
-	channelsConfig, configErr := config.ReadConfig("config.yml")
+	channelsConfig, configErr := config.ReadConfig(fmt.Sprintf("%s/config.yml", botConfig.ConfigDir))
 	if configErr != nil {
 		panic("Could not read config file: " + configErr.Error())
 	}
