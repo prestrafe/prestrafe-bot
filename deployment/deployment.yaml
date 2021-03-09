@@ -21,7 +21,7 @@ spec:
               value: prestrafe-gsi.prestrafe.svc.cluster.local
             - name: BOT_GSIPORT
               value: "8080"
-            - name: BOT_METRICSPORT
+            - name: BOT_METRICPORT
               value: "9080"
             - name: BOT_TWITCHUSERNAME
               value: prestrafebot
