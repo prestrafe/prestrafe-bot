@@ -17,7 +17,7 @@ type BotConfig struct {
 	GlobalApiToken string `required:"true"`
 	GsiAddr        string `required:"true"`
 	GsiPort        int    `required:"true"`
-	MetricsPort    int    `required:"true"`
+	MetricPort     int    `required:"true"`
 	TwitchUsername string `required:"true"`
 	TwitchApiToken string `required:"true"`
 	ConfigDir      string `default:""`
@@ -29,7 +29,7 @@ func main() {
 
 	http.Handle("/metrics", promhttp.Handler())
 	go func() {
-		_ = http.ListenAndServe(fmt.Sprintf(":%d", botConfig.MetricsPort), nil)
+		_ = http.ListenAndServe(fmt.Sprintf(":%d", botConfig.MetricPort), nil)
 	}()
 
 	channelsConfig, configErr := config.ReadConfig(fmt.Sprintf("%s/config.yml", botConfig.ConfigDir))
