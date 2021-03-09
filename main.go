@@ -17,10 +17,10 @@ type BotConfig struct {
 	GlobalApiToken string `required:"true"`
 	GsiAddr        string `required:"true"`
 	GsiPort        int    `required:"true"`
-	MetricPort     int    `required:"true"`
 	TwitchUsername string `required:"true"`
 	TwitchApiToken string `required:"true"`
 	ConfigDir      string `default:""`
+	MetricPort     int    `default:"9080"`
 }
 
 func main() {
