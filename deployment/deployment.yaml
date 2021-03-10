@@ -46,9 +46,9 @@ spec:
       volumes:
         - name: bot-config
           secret:
-            secretName: prestrafe-bot
+            secretName: bot
             items:
               - key: config.yml
                 path: config.yml
       imagePullSecrets:
-        - name: prestrafe-bot-imagepull-secret
+        - name: bot-imagepull-secret
