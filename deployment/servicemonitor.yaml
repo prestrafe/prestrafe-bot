@@ -4,7 +4,8 @@ metadata:
   name: prestrafe-bot
 spec:
   endpoints:
-    - port: http-metrics
+    - honorLabels: true
+      targetPort: http-metrics
   selector:
     matchLabels:
       app: prestrafe-bot

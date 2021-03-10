@@ -4,8 +4,7 @@ metadata:
   name: prestrafe-bot
 spec:
   ports:
-    - name: http-metrics
-      port: 9080
+    - port: 9080
       targetPort: http-metrics
       protocol: TCP
   selector:
