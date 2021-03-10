@@ -1,10 +1,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-images:
-  - name: prestrafe-bot
-    newName: registry.gitlab.com/prestrafe-twitchbot/prestrafe-bot
-    newTag: c23a20fa
+namePrefix: prestrafe-
+
+configurations:
+  - kustomize-configurations/servicemonitor.yaml
+  - kustomize-configurations/sealedsecret.yaml
+
+resources:
+  - imagepullsecret-sealed.yaml
+  - secret-sealed.yaml
+  - deployment.yaml
+  - service.yaml
+  - servicemonitor.yaml
 
 commonLabels:
   app.kubernetes.io/name: prestrafe-bot
@@ -13,9 +21,7 @@ commonLabels:
   app.kubernetes.io/component: bot
   app.kubernetes.io/managed-by: Kustomize
 
-resources:
-  - imagepullsecret-sealed.yaml
-  - secret-sealed.yaml
-  - deployment.yaml
-  - service.yaml
-  - servicemonitor.yaml
+images:
+  - name: prestrafe-bot
+    newName: registry.gitlab.com/prestrafe-twitchbot/prestrafe-bot
+    newTag: c23a20fa
