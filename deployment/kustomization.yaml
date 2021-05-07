@@ -24,4 +24,4 @@ commonLabels:
 images:
 - name: prestrafe-bot
   newName: registry.gitlab.com/prestrafe-twitchbot/prestrafe-bot
-  newTag: 9d26a3ff
+  newTag: 05abb9b3
