@@ -1,6 +1,42 @@
-# prestrafe-bot
+## Building and running the bot locally
 
-Deploy trigger: #1
+Start by checking out this repository and navigate into it within your terminal. Since the bot is designed to run inside
+a Docker container, it requires some setup. First off, you will need to create a config file that contains the Twitch
+channels that the bot should join. Create a file named `config.yml` in the source code directory and add the following
+content:
+
+```yaml
+channels:
+  - name: SomeChannel # This is the name of the Twitch channel that the bot should join. 
+    gsiToken: xxx # This can be any random string, that needs to be present in your CSGO GSI config as well. 
+```
+
+Next you will need to define some environment variables to configure the bots execution context. To do so, create a file
+called `development.env` inside the source code directory and add the following content:
+
+```properties
+# The API token the bot should used to authenticate against the Global API.
+BOT_GLOBALAPITOKEN=xxx
+
+# The address and port of the GSI backend service that should be used by the bot.
+# It depends on how you run the GSI backend, but most likely example values are correct for local development.
+BOT_GSIADDR=localhost
+BOT_GSIPORT=8080
+
+# The Twitch.tv username and API token that should be used to talk to the Twitch Chat API.
+BOT_TWITCHUSERNAME=xxx
+BOT_TWITCHAPITOKEN=xxx
+```
+
+Now you are ready to run the Docker container. The bot is shipped within a Docker container that builds the executable
+and runs it directly afterwards. To build and run that container, perform the following commands:
+
+```powershell
+docker build -t prestrafe-bot:dev .
+docker run --rm --network=host --name prestrafe-bot --env-file .\development.env -it prestrafe-bot:dev
+```
+
+Of course, you need to run the GSI backend service before the bot will be able to work.
 
 ## Supported commands
 
