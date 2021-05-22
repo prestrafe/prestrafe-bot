@@ -15,6 +15,9 @@ Next you will need to define some environment variables to configure the bots ex
 called `development.env` inside the source code directory and add the following content:
 
 ```properties
+# This is required because of limitations of Docker for Windows, we cannot mount the config file.
+BOT_CONFIGDIR=/app
+
 # The API token the bot should used to authenticate against the Global API.
 BOT_GLOBALAPITOKEN=xxx
 
