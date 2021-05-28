@@ -9,6 +9,7 @@ content:
 channels:
   - name: SomeChannel # This is the name of the Twitch channel that the bot should join. 
     gsiToken: xxx # This can be any random string, that needs to be present in your CSGO GSI config as well. 
+    serverToken: xxx # Token string that will be registered in the server using sm_setprestrafetoken.
 ```
 
 Next you will need to define some environment variables to configure the bots execution context. To do so, create a file
@@ -25,6 +26,10 @@ BOT_GLOBALAPITOKEN=xxx
 # It depends on how you run the GSI backend, but most likely example values are correct for local development.
 BOT_GSIADDR=localhost
 BOT_GSIPORT=8080
+
+# The address and port of the SourceMod backend service that should be used by the bot.
+BOT_SMADDR=localhost
+BOT_SMPORT=1337
 
 # The Twitch.tv username and API token that should be used to talk to the Twitch Chat API.
 BOT_TWITCHUSERNAME=xxx
@@ -45,7 +50,7 @@ Of course, you need to run the GSI backend service before the bot will be able t
 
 - `!bpb (bonus-number) (map-name)`: Displays the personal best time for the bonus stage.
 - `!bwr (bonus-number) (map-name)`: Displays the world record time for the bonus stage.
-- `!globalcheck`: Yes
+- `!globalcheck`: Display global status of the server and player.
 - `!prestrafe`: A list of supported commands of the Prestrafe bot.
 - `!map (map-name)`: Displays information about the currently played map.
 - `!mode`: Displays the currently played KZ timer mode.
@@ -54,6 +59,8 @@ Of course, you need to run the GSI backend service before the bot will be able t
 - `!stats`: Displays a link to the GOKZ-Stats page.
 - `!tier (map-name)`: Display the difficulty level for the map.
 - `!wr (map-name)`: Displays the world record time for the main stage.
+- `!server`: Displays server information (name, global status)
+- `!run`: Displays current run information (Map name, course, checkpoints, teleports, time elapsed)
 
 ## Jumpstat Commands
 

@@ -10,6 +10,7 @@ import (
 	"gitlab.com/prestrafe/prestrafe-bot/config"
 	"gitlab.com/prestrafe/prestrafe-bot/globalapi"
 	"gitlab.com/prestrafe/prestrafe-bot/gsiclient"
+	"gitlab.com/prestrafe/prestrafe-bot/smclient"
 	"gitlab.com/prestrafe/prestrafe-bot/twitchbot"
 )
 
@@ -17,6 +18,8 @@ type BotConfig struct {
 	GlobalApiToken string `required:"true"`
 	GsiAddr        string `required:"true"`
 	GsiPort        int    `required:"true"`
+	SmAddr         string `required:"true"`
+	SmPort         int    `required:"true"`
 	TwitchUsername string `required:"true"`
 	TwitchApiToken string `required:"true"`
 	ConfigDir      string `default:""`
@@ -50,10 +53,17 @@ func main() {
 func createCommands(botConfig *BotConfig, channelConfig *config.ChannelConfig) []twitchbot.ChatCommand {
 	apiClient := globalapi.NewClient(botConfig.GlobalApiToken)
 	gsiClient := gsiclient.New(botConfig.GsiAddr, botConfig.GsiPort, channelConfig.GsiToken)
+	smClient := smclient.New(botConfig.SmAddr, botConfig.SmPort, channelConfig.ServerToken)
 
 	commands := []twitchbot.ChatCommand{
-		// Troll commands
-		twitchbot.NewGlobalCheckCommand().Build(),
+		// Globalcheck command
+		twitchbot.NewGlobalCheckCommand(gsiClient, smClient).Build(),
+
+		// Current run command
+		twitchbot.NewRunCommand(gsiClient, smClient).Build(),
+
+		// Server command
+		twitchbot.NewServerCommand(gsiClient, smClient).Build(),
 
 		// Map information commands
 		twitchbot.NewMapCommand(gsiClient, apiClient).Build(),
