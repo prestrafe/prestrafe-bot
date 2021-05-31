@@ -57,7 +57,7 @@ func createCommands(botConfig *BotConfig, channelConfig *config.ChannelConfig) [
 
 	commands := []twitchbot.ChatCommand{
 		// Globalcheck command
-		twitchbot.NewGlobalCheckCommand(gsiClient, smClient).Build(),
+		twitchbot.NewGlobalCheckCommand(gsiClient, smClient, apiClient).Build(),
 
 		// Current run command
 		twitchbot.NewRunCommand(gsiClient, smClient).Build(),
