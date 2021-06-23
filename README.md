@@ -63,3 +63,7 @@ Of course, you need to run the GSI backend service before the bot will be able t
 - `!lj (bind|nobind)`: Displays the best long jump.
 - `!mbh (bind|nobind)`: Displays the best multi bunny hop.
 - `!wj (bind|nobind)`: Displays the best weird jump.
+
+## Deployment Trigger
+
+Number: 1
