@@ -39,7 +39,7 @@ func createPBHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Cha
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP)", nub.FormattedTime(), nub.Teleports)
 		} else {
-			message += fmt.Sprintf("NUB: None")
+			message += "NUB: None"
 		}
 
 		message += ", "
@@ -47,7 +47,7 @@ func createPBHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Cha
 		if pro != nil && apiError == nil {
 			message += fmt.Sprintf("PRO: %s", pro.FormattedTime())
 		} else {
-			message += fmt.Sprintf("PRO: None")
+			message += "PRO: None"
 		}
 
 		return
