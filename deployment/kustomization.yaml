@@ -23,5 +23,5 @@ commonLabels:
 
 images:
 - name: prestrafe-bot
-  newName: registry.gitlab.com/prestrafe-twitchbot/prestrafe-bot
-  newTag: 37aea5b9
+  newName: jangraefen/prestrafe-bot
+  newTag: sha-cfe2f11
