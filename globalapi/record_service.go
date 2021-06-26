@@ -54,6 +54,10 @@ func (s *RecordServiceClient) GetWorldRecord(mapName, mode string, stage int) (n
 		"overall":           "true",
 		"limit":             "1",
 	})
+	if err != nil {
+		return nil, nil, err
+	}
+
 	pros, err := s.GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
@@ -63,11 +67,14 @@ func (s *RecordServiceClient) GetWorldRecord(mapName, mode string, stage int) (n
 		"overall":           "true",
 		"limit":             "1",
 	})
+	if err != nil {
+		return nil, nil, err
+	}
 
-	if nubs != nil && len(nubs) > 0 {
+	if len(nubs) > 0 {
 		nub = &nubs[0]
 	}
-	if pros != nil && len(pros) > 0 {
+	if len(pros) > 0 {
 		pro = &pros[0]
 	}
 
@@ -83,6 +90,10 @@ func (s *RecordServiceClient) GetPersonalRecord(mapName, mode string, stage int,
 		"stage":             strconv.Itoa(stage),
 		"limit":             "1",
 	})
+	if err != nil {
+		return nil, nil, err
+	}
+
 	pros, err := s.GetRecordsTop(QueryParameters{
 		"map_name":          mapName,
 		"modes_list_string": mode,
@@ -92,11 +103,14 @@ func (s *RecordServiceClient) GetPersonalRecord(mapName, mode string, stage int,
 		"stage":             strconv.Itoa(stage),
 		"limit":             "1",
 	})
+	if err != nil {
+		return nil, nil, err
+	}
 
-	if nubs != nil && len(nubs) > 0 {
+	if len(nubs) > 0 {
 		nub = &nubs[0]
 	}
-	if pros != nil && len(pros) > 0 {
+	if len(pros) > 0 {
 		pro = &pros[0]
 	}
 

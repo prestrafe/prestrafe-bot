@@ -26,7 +26,7 @@ func (s *PlayerRankServiceClient) GetPlayerRanks(criteria QueryParameters) (resu
 func (s *PlayerRankServiceClient) GetPlayerRank(modeId int, steamId64 int64, hasTeleports *bool) (rank *PlayerRank, err error) {
 	teleports := ""
 	if hasTeleports != nil {
-		if *hasTeleports == true {
+		if *hasTeleports {
 			teleports = "true"
 		} else {
 			teleports = "false"
@@ -41,7 +41,7 @@ func (s *PlayerRankServiceClient) GetPlayerRank(modeId int, steamId64 int64, has
 		"finishes_greater_than": "0",
 		"limit":                 "1",
 	})
-	if ranks != nil && len(ranks) > 0 {
+	if len(ranks) > 0 {
 		rank = &ranks[0]
 	}
 

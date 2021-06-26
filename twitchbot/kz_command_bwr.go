@@ -53,7 +53,7 @@ func createBWRHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Ch
 		if nub != nil && apiError == nil {
 			message += fmt.Sprintf("NUB: %s (%d TP) by %s", nub.FormattedTime(), nub.Teleports, nub.PlayerName)
 		} else {
-			message += fmt.Sprintf("NUB: None")
+			message += "NUB: None"
 		}
 
 		message += ", "
@@ -61,7 +61,7 @@ func createBWRHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) Ch
 		if pro != nil && apiError == nil {
 			message += fmt.Sprintf("PRO: %s by %s", pro.FormattedTime(), pro.PlayerName)
 		} else {
-			message += fmt.Sprintf("PRO: None")
+			message += "PRO: None"
 		}
 
 		return

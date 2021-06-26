@@ -58,7 +58,7 @@ func (s *JumpStatServiceClient) GetJumpStatPersonalBest(jumpType string, maxDist
 		"limit":              "25",
 	})
 
-	if jumpStats != nil && len(jumpStats) > 0 {
+	if len(jumpStats) > 0 {
 		for i, js := range jumpStats {
 			if js.StrafeCount <= 15 {
 				jumpStat = &jumpStats[i]

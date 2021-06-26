@@ -16,8 +16,8 @@ func NewMapCommand(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatC
 
 func createMapHandler(gsiClient gsiclient.Client, apiClient globalapi.Client) ChatCommandHandler {
 	return func(ctx CommandContext) (message string, err error) {
+		var modeName string
 		mapName, hasMapName := ctx.Parameter("map")
-		modeName := "kz_timer"
 
 		gameState, gsiError := gsiClient.GetGameState()
 		if !hasMapName && (gsiError != nil || !gsiclient.IsKZGameState(gameState)) {
