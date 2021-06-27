@@ -24,4 +24,4 @@ commonLabels:
 images:
 - name: prestrafe-bot
   newName: jangraefen/prestrafe-bot
-  newTag: sha-cfe2f11
+  newTag: sha-b9c4cb7
