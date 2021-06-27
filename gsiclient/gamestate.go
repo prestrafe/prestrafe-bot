@@ -6,10 +6,11 @@ import (
 )
 
 type GameState struct {
-	Auth     *AuthState     `json:"auth"`
-	Map      *MapState      `json:"map"`
-	Player   *PlayerState   `json:"player"`
-	Provider *ProviderState `json:"provider"`
+	Auth          *AuthState     `json:"auth"`
+	Map           *MapState      `json:"map"`
+	Player        *PlayerState   `json:"player"`
+	Provider      *ProviderState `json:"provider"`
+	PreviousState *GameState     `json:"previously"`
 }
 
 type AuthState struct {
@@ -25,7 +26,9 @@ type ProviderState struct {
 }
 
 type MapState struct {
-	Name string `json:"name"`
+	Name   string     `json:"name"`
+	TeamCT *TeamState `json:"team_ct"`
+	TeamT  *TeamState `json:"team_t"`
 }
 
 type PlayerState struct {
@@ -41,6 +44,10 @@ type MatchStats struct {
 	Deaths  int `json:"deaths"`
 	Mvps    int `json:"mvps"`
 	Score   int `json:"score"`
+}
+
+type TeamState struct {
+	Timeouts *int `json:"timeouts_remaining"`
 }
 
 func IsKZGameState(gameState *GameState) bool {

@@ -1,4 +1,4 @@
-package gsiclient
+package smclient
 
 import (
 	"encoding/json"
@@ -9,28 +9,26 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-// This interfaces defines the public API of the GSI client. The client can be used to retrieve information about the
-// current game state of a player, by connecting to a running GSI server. It handles authentication automatically.
 type Client interface {
 	// Retrieves the game state for the player that this client connects to.
-	GetGameState() (*GameState, error)
+	GetPlayerInfo() (*FullPlayerInfo, error)
 }
 
 type client struct {
-	host      string
-	port      int
-	authToken string
+	host        string
+	port        int
+	serverToken string
 }
 
-func New(host string, port int, authToken string) Client {
-	return &client{host, port, authToken}
+func New(host string, port int, serverToken string) Client {
+	return &client{host, port, serverToken}
 }
 
-func (c *client) GetGameState() (*GameState, error) {
+func (c *client) GetPlayerInfo() (*FullPlayerInfo, error) {
 	response, restErr := resty.New().
 		R().
-		SetHeader("Authorization", fmt.Sprintf("GSI %s", c.authToken)).
-		Get(fmt.Sprintf("http://%s:%d/gsi/get", c.host, c.port))
+		SetHeader("Authorization", fmt.Sprintf("SM %s", c.serverToken)).
+		Get(fmt.Sprintf("http://%s:%d/sm/get", c.host, c.port))
 	if restErr != nil {
 		log.Println(restErr)
 		return nil, restErr
@@ -42,7 +40,7 @@ func (c *client) GetGameState() (*GameState, error) {
 		return nil, errors.New(errorMessage)
 	}
 
-	result := new(GameState)
+	result := new(FullPlayerInfo)
 	if jsonErr := json.Unmarshal(response.Body(), result); jsonErr != nil {
 		log.Println(jsonErr)
 		return nil, jsonErr
