@@ -9,8 +9,6 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-// This interfaces defines the public API of the GSI client. The client can be used to retrieve information about the
-// current game state of a player, by connecting to a running GSI server. It handles authentication automatically.
 type Client interface {
 	// Retrieves the game state for the player that this client connects to.
 	GetPlayerInfo() (*FullPlayerInfo, error)
@@ -30,7 +28,7 @@ func (c *client) GetPlayerInfo() (*FullPlayerInfo, error) {
 	response, restErr := resty.New().
 		R().
 		SetHeader("Authorization", fmt.Sprintf("SM %s", c.serverToken)).
-		Get(fmt.Sprintf("http://%s:%d/get", c.host, c.port))
+		Get(fmt.Sprintf("http://%s:%d/sm/get", c.host, c.port))
 	if restErr != nil {
 		log.Println(restErr)
 		return nil, restErr
