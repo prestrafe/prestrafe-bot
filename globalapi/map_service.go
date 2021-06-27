@@ -54,30 +54,24 @@ func (s *MapServiceClient) GetMapByName(mapName string) (result *KzMap, err erro
 	return
 }
 
-func (s *MapServiceClient) GetMapIdByName(mapName string) (result int, err error) {
-	kzMap := &KzMap{}
-	err = s.Get("maps/name/"+mapName, kzMap)
-
-	return kzMap.Id, nil
-}
-
 func (s *MapServiceClient) CheckRecordFilter(stage int, mapName string, modeId int) string {
-	mapId, err := s.GetMapIdByName(mapName)
-	if err != nil {
-		return "Cannot establish a connection to the API server."
+	globalMap, apiError := s.GetMapByName(mapName)
+	if apiError != nil {
+		return "cannot establish a connection to the API server."
 	}
+	mapId := globalMap.Id
 	if mapId != 0 {
 		result := []RecordFilter{}
 
-		err = s.GetWithParameters("record_filters", QueryParameters{
+		apiError = s.GetWithParameters("record_filters", QueryParameters{
 			"stages":   strconv.Itoa(stage),
 			"map_ids":  strconv.Itoa(mapId),
 			"mode_ids": strconv.Itoa(modeId),
 		}, &result)
-		if err != nil {
-			match, _ := regexp.MatchString(`Expected \d+, but got \d+ instead!`, err.Error())
+		if apiError != nil {
+			match, _ := regexp.MatchString(`expected \d+, but got \d+ instead!`, apiError.Error())
 			if match {
-				return "Cannot establish a connection to the API server."
+				return "cannot establish a connection to the API server."
 			}
 		} else if len(result) == 0 {
 			return "No (Filter does not exist for this course)"

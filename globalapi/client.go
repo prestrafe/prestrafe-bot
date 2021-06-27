@@ -66,7 +66,7 @@ func (c *client) GetWithParameters(path string, queryParams QueryParameters, res
 
 	c.logger.Printf("%s -> Status: %d, Body: %s\n", response.Request.URL, response.StatusCode(), response.Body())
 	if response.StatusCode() != 200 {
-		return fmt.Errorf("Expected status '%d' but got '%d'", 200, response.StatusCode())
+		return fmt.Errorf("expected status '%d' but got '%d'", 200, response.StatusCode())
 	}
 
 	if jsonErr := json.Unmarshal(response.Body(), result); jsonErr != nil {
